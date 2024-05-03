@@ -9,7 +9,7 @@ https://github.com/roopchansinghv/dockerImage4DevMR
 
 To build the image, check out options/notes from here:
 https://docs.docker.com/get-started/02_our_app/
-You can run:
+You can run (which took: 786.7s):
 
   docker build -t afni_doc_v1 .
 
