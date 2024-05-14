@@ -8,17 +8,32 @@ FROM ubuntu:24.04
 # in 2 places, but at least they are right next to each
 # other.
 ENV  VERSION_UBUNTU   24.04
+ENV  APACK            linux_ubuntu_24_64
+ENV  RVNUM            4.3
+ENV  RPACK            linux_ubuntu_24_R-${RVNUM}_libs
+ENV  AWEBS            https://afni.nimh.nih.gov/pub/dist/tgz
 
+# Install package dependencies (**keep in sync with main source code
+# OS_notes**)
+ENV   BUILD_SCRIPT    create_machine.sh
+ADD   $BUILD_SCRIPT   /tmp
+RUN   sh              /tmp/$BUILD_SCRIPT
+RUN   rm -f           /tmp/$BUILD_SCRIPT
 
+# Install AFNI binaries (note where 'abin' is)
+RUN   curl -O         ${AWEBS}/${APACK}.tgz
+RUN   tar -xf         ${APACK}.tgz
+RUN   mv              ${APACK}  /usr/local/abin
+RUN   rm -f           ${APACK}.tgz
+ENV   PATH=/usr/local/abin:$PATH
 
-# Subsume all package installation and system customization
-# into a single shell script which can be repurposed for a
-# direct / live machine installation.
-ENV   MACHINE_BUILD_SCRIPT    create_machine.sh
-ADD   $MACHINE_BUILD_SCRIPT   /tmp
-RUN   sh                      /tmp/$MACHINE_BUILD_SCRIPT
-RUN   rm -f                   /tmp/$MACHINE_BUILD_SCRIPT
-
+# Install R packages (R-cran already installed, above), and
+# prepacked packages must match that version's MAJ.MIN nums.
+ENV   R_LIBS=/usr/local/share/R-${VNUM}
+RUN   curl -O         ${AWEBS}/package_libs/${RPACK}.tgz
+RUN   tar -xf         ${RPACK}.tgz
+RUN   mv              ${RPACK}  ${R_LIBS}
+RUN   rm -f           ${RPACK}.tgz
 
 
 # Default start-up command is just a plain ol' shell for now
