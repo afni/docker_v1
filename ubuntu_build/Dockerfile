@@ -29,7 +29,7 @@ ENV   PATH=/usr/local/abin:$PATH
 
 # Install R packages (R-cran already installed, above), and
 # prepacked packages must match that version's MAJ.MIN nums.
-ENV   R_LIBS=/usr/local/share/R-${VNUM}
+ENV   R_LIBS=/usr/local/share/R-${RVNUM}
 RUN   curl -O         ${AWEBS}/package_libs/${RPACK}.tgz
 RUN   tar -xf         ${RPACK}.tgz
 RUN   mv              ${RPACK}  ${R_LIBS}
