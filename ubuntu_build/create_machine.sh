@@ -31,7 +31,3 @@ apt-get install -y      tcsh xfonts-base libssl-dev       \
 apt-get install -y      libgdal-dev libopenblas-dev       \
                         libnode-dev libudunits2-dev
 
-# make symlink for package GSL
-ln -s                                                     \
-     /usr/lib/x86_64-linux-gnu/libgsl.so.27               \
-     /usr/lib/x86_64-linux-gnu/libgsl.so.19
