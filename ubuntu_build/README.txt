@@ -11,7 +11,7 @@ To build the image, check out options/notes from here:
 https://docs.docker.com/get-started/02_our_app/
 You can run (which took: 786.7s):
 
-  docker build -t afni_doc_v1 .
+  docker build -t afni/afni_ubuntu24_full/v1 .
 
 where:
 + the '.' means to find a file called Dockerfile in the current
@@ -19,6 +19,14 @@ where:
 + '-t ..' makes a tag for the created image, which will be effectively
   the name for referencing/using the created image. This can have more
   functionality, see https://docs.docker.com/reference/cli/docker/image/tag/
+
+To run the image after that, perhaps:
+
+  docker run -it --rm=true afni/afni_ubuntu24_full:v1
+
+Some useful links (from Wisconsin!):
++ https://chtc.cs.wisc.edu/uw-research-computing/docker-build
++ https://chtc.cs.wisc.edu/uw-research-computing/docker-test.html
 
 ---------------------------------------------------------------------------
 
