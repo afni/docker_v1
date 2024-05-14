@@ -35,3 +35,30 @@ From here (https://stackoverflow.com/questions/47854463/docker-got-permission-de
 commands without an error, such as:
 
   docker container ls -a 
+
+---------------------------------------------------------------------------
+
+TO DO
+
++ Figure out how to add to the local container $PATH, for adding in
+  pre-packaged things, like the Ubuntu 24 binaries and/or R package
+  libraries.
+
++ Either curl the Ubuntu 24.04 binaries that we now build, e.g.:
+
+    curl -O https://afni.nimh.nih.gov/pub/dist/tgz/linux_ubuntu_24_64.tgz
+
+  ... or decide if we want to run a "make" locally---though, if we already
+  have the binaries, why not just save time, perhaps?
+
++ Add in R package dependencies (the things obtained with 'rPkgInstall
+  -pkgs ALL'), which might exist in ~/R on the build machine anyways.
+
++ Figure out how to deal with ~/.afnirc and ~/.sumarc environment
+  variables---those will be in the *user's* home directory, not the
+  *container* home directory, and make sure that is fine/readable.
+
++ Figure out what to do with the *.HEAD and *.nii.gz datasets we
+  distribute within the binary directory. Do we push those out to a
+  new place?  The user might want to be able to edit/reduce/increase
+  that list of files.
