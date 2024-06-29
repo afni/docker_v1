@@ -66,3 +66,7 @@ TO DO
   distribute within the binary directory. Do we push those out to a
   new place?  The user might want to be able to edit/reduce/increase
   that list of files.
+
++ Yarik suggested reducing the number of "RUN" commands by using 
+  semicolons when a few appear in a row; this would reduce the number
+  of layers.
