@@ -26,9 +26,9 @@ apt-get install -y      tcsh xfonts-base libssl-dev       \
                         gnome-terminal nautilus           \
                         firefox xfonts-100dpi             \
                         r-base-dev cmake bc               \
-	                libxext-dev libxmu-dev libxpm-dev \
+                        libxext-dev libxmu-dev libxpm-dev \
                         libgsl-dev libglut-dev libxi-dev  \
-                        libglib2.0-dev 
+                        libglib2.0-dev git
 
 # get more dependencies for R-package brms
 apt-get install -y      libgdal-dev libopenblas-dev       \
