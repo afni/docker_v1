@@ -1,0 +1,223 @@
+#!/bin/tcsh -f
+
+@global_parse `basename $0` "$*" ; if ($status) exit 0
+
+#################################################
+## 04/2025 Justin Rajendra
+## launch the afni docker container on macOS
+
+## get the current program name
+set prog = `basename $0`
+
+## find afni
+set prog_bin = `which ${prog}`
+set afni_dir = `dirname ${prog_bin}`
+
+#################################################
+## show help
+set narg = 1
+@  amax = $#argv - 0
+
+while ( $narg <= $amax )
+    if ( "$argv[$narg]" == "-help" || "$argv[$narg]" == "-h" ) then
+        goto SHOW_HELP
+    else
+        goto SHOW_HELP
+    endif
+    @ narg ++
+end
+
+################################################
+## check to see if things exist / are installed
+
+## check for macOS
+set macOS = "`sw_vers -productName`"
+if ( "$macOS" != "macOS" ) then
+
+    echo ; echo "** ERROR: You don't seem to be running macOS." ; echo
+    echo "If you are, there may be a problem with this program..."
+    echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
+    exit 1
+
+endif
+
+## check for docker
+set docker_bin = "`where docker`"
+if ( "$docker_bin" == "" ) then
+
+    echo ; echo "** ERROR: Docker not found." ; echo
+    echo "Is Docker installed?"
+    echo "If Docker is installed, can you open it?"
+    echo "If not, check your paths or manually launch it from Finder." ; echo
+    exit 1
+
+endif
+
+## check for XQuartz
+set xquartz_bin = "`where XQuartz`"
+if ( "$xquartz_bin" == "" ) then
+
+    echo ; echo "** ERROR: XQuartz not found." ; echo
+    echo "Is XQuartz installed?"
+    echo "If not, you can install it from homebrew"
+    echo "or from here: https://www.xquartz.org" ; echo
+    exit 1
+
+endif
+
+# defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+
+## check for Xquartz security setting
+set xquartz_sec = "`defaults read org.xquartz.X11.plist nolisten_tcp`"
+if ( "$xquartz_sec" == "1" ) then
+
+    echo ; echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
+    echo
+    echo "You can fix this by entering the following command with XQuartz quit:"
+    echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
+    echo
+    echo "OR you can do this in the Security tab of the Settings in XQuartz."
+    echo "Put a check in the 'Allow connections from network clients' box."
+    echo
+    echo "OR I can fix this for you now."
+    echo "Do you want me to fix this? You only have to do this once."
+    echo "XQuartz will need to be quit to do this."
+    echo
+    echo "Enter Y to quit XQuartz and fix this or enter anything else to quit:"
+    set fix = "$<"
+
+    if ( "$fix" == "Y" ) then
+        set xquart_pid = "`pgrep Xquartz`"
+        if ( "$xquart_pid" != "" ) then
+            echo "Killing all XQuartz..."
+            killall Xquartz
+        endif
+
+        echo
+        echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
+        defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+        echo
+    else
+        echo
+        echo "Please fix the XQuartz setting with the above instructions."
+        echo
+        exit 1
+    endif
+endif   ## end check for XQuartz security setting
+
+
+#########################################################
+## check to see if things are running.  If not, open them
+
+## check for docker running
+## this file should exist if docker is running
+if ( ! -e /Users/${USER}/.docker/run/docker.sock ) then
+
+    echo ; echo "+* Warning: Docker daemon is not running."
+    echo "Launching Docker daemon. Please wait."
+    open -a Docker
+    sleep 5 ; echo
+
+    while ( ! -e "/Users/${USER}/.docker/run/docker.sock" ) 
+        echo "Waiting for Docker daemon..."
+        sleep 2
+    end
+
+endif
+
+## make sure we have the afni_docker image
+## this is here because we need to have docker already running
+## setup later for docker pull
+set afni_img = `docker images afni_docker --format "{{.Repository}}"`
+if ( "$afni_img" == "" ) then
+
+    echo ; echo "** ERROR: The afni_docker image was not found."
+    echo "See instructions here:"
+    echo "https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/container.html"
+    echo ; exit 1
+
+endif
+
+## check for XQuartz running
+set xquart_pid = "`pgrep Xquartz`"
+if ( "$xquart_pid" == "" ) then
+
+    echo ; echo "+* Warning: Xquartz is not running."
+    echo "Launching Xquartz. Please wait."
+    open -a Xquartz
+    sleep 5 ; echo
+
+    while (1) 
+        set xquart_pid = "`pgrep Xquartz`"
+        if ( "$xquart_pid" == "" ) then
+            echo "Waiting for Xquartz..."
+            sleep 2
+        else
+            break
+        endif
+    end
+
+endif
+
+###########################################################################
+## setup display and run docker container
+
+## get the display
+echo "Setting display variables."
+xhost + `hostname`
+setenv HOSTNAME `hostname`
+
+## run the docker
+echo ; echo "Launching afni_docker ...beep boop beep boop..." ; echo
+docker run -ti --rm \
+       -u afni_user \
+       -e DISPLAY=${HOSTNAME}:0 \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       -v ${HOME}:/home/external      \
+       afni_docker
+
+exit 0
+
+###########################################################################
+SHOW_HELP:
+cat << EOF
+
+   ----------------------------------------------------------------------------
+   $prog ~1~
+
+           Helper script to launch the afni docker on macOS.
+           This script does not need any arguments.  
+           It will start the afni_docker from any local folder, but you will 
+           start the docker terminal at the container root directory.
+
+           REQUIREMENTS:  
+           1. This MUST be run on macOS.
+           2. Docker MUST be installed.
+           3. Xquartz MUST be installed.
+           4. The afni_docker container must be installed.
+
+           This script will check for all of the above.
+           If Docker and/or Xquartz are not running, the script will
+           launch them for you.
+
+           For afni_docker installation check here:
+https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/container.html
+           
+   -----------------------------------------------------------------------------
+   options: ~1~
+
+      -help   : Show this help.
+
+   -----------------------------------------------------------------------------
+   examples: ~1~
+
+      $prog
+
+      $prog -help
+
+   -----------------------------------------------------------------------------
+   Justin Rajendra 11/2017
+
+EOF
+
+exit 0
