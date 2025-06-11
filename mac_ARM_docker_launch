@@ -111,7 +111,7 @@ endif   ## end check for XQuartz security setting
 
 ## check for docker running
 ## this file should exist if docker is running
-if ( ! -e /Users/${USER}/.docker/run/docker.sock ) then
+if ( ! -e unix:///Users/${USER}/.docker/run/docker.sock ) then
 
     echo ; echo "+* Warning: Docker daemon is not running."
     echo "Launching Docker daemon. Please wait."
