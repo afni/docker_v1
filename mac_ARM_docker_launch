@@ -113,16 +113,17 @@ endif   ## end check for XQuartz security setting
 ## this file should exist if docker is running
 if ( ! -e unix:///Users/${USER}/.docker/run/docker.sock ) then
 
-    echo ; echo "+* Warning: Docker daemon is not running."
-    echo "Launching Docker daemon. Please wait."
-    open -a Docker
-    sleep 5 ; echo
+    if ( ! -e /Users/${USER}/.docker/run/docker.sock ) then
+        echo ; echo "+* Warning: Docker daemon is not running."
+        echo "Launching Docker daemon. Please wait."
+        open -a Docker
+        sleep 5 ; echo
 
-    while ( ! -e "/Users/${USER}/.docker/run/docker.sock" ) 
-        echo "Waiting for Docker daemon..."
-        sleep 2
-    end
-
+        while ( ! -e "/Users/${USER}/.docker/run/docker.sock" ) 
+            echo "Waiting for Docker daemon..."
+            sleep 2
+        end
+    endif
 endif
 
 ## make sure we have the afni_docker image

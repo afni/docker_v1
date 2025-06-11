@@ -20,4 +20,4 @@ RUN bash /home/afni_user/$USER_SCRIPT
 RUN rm -f /home/afni_user/$USER_SCRIPT
 
 ## Default start-up command is just a plain ol' shell for now
-ENTRYPOINT ["/bin/tcsh"]
+ENTRYPOINT ["/bin/bash"]
