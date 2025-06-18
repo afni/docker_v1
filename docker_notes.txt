@@ -1,0 +1,44 @@
+###################################
+## docker build / run notes
+## Justin Rajendra 06/2025
+
+## 1. install docker however you like
+
+## 2. get afni_docker from github
+git clone https://github.com/afni/docker_v1.git
+
+## 3. go to the arm or intel folder matching your machine
+
+## 4. build afni_docker. 
+## Must be in the folder with Dockerfile 
+## or change "." to the path with the Dockerfile
+## docker must already be running
+## (add sudo on Ubuntu for some reason)
+docker build -t afni_docker --progress=plain . 2>&1 | tee build.log
+
+###############################
+## 5. run afni_docker 
+## docker must already be running
+
+## tested on zsh on macOS arm with XQuartz
+xhost + ${hostname}
+export HOSTNAME=`hostname`
+
+docker run -ti --rm \
+       -u afni_user \
+       -e DISPLAY=${HOSTNAME}:0 \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       -v ${HOME}:/home/external      \
+       afni_docker
+
+## tested on bash on Ubuntu 24 intel
+## seems to need sudo for Ubuntu
+xhost +
+
+sudo docker run -ti --rm \
+       -u afni_user \
+       -v ${HOME}:/home/external \
+       -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+       --network=host \
+       --env DISPLAY=$DISPLAY \
+       afni_docker
