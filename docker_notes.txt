@@ -2,47 +2,54 @@
 ## docker build / run notes
 ## Justin Rajendra 06/2025
 
-##################################################
+############################################
 ## sudo note on linux (tested on Ubuntu 24):
 ## If you don't want to use sudo for all docker commands,
 ## you can add your user to a "docker" group.
 ## The "docker" group may or may not exist depending on how you 
-## installed docker. To do that you can run:
+## installed docker. To add the user to the docker group, you can run:
 
 ## add a new group called docker and add the current user to it.
 sudo groupadd docker
 sudo usermod -aG docker $USER
 
 ## You can try to apply the changes with this, but you may need
-## to log out or reboot
+## to log out or reboot.
 newgrp docker
 
 
-#############################################
-## 1. install docker however you like
+###############################################
+## Steps for building the docker image locally:
 
-## 2. get afni_docker from github
+## 1. Install docker however you like.
+##    https://www.docker.com/get-started/
+
+## 2. Get afni_docker files from the afni github.
 git clone https://github.com/afni/docker_v1.git
 
-## 3. go to the arm or x86 folder matching your machine
-## (you may want to make a copy of the folder and go there instead)
+## 3. Go to the arm or x86 folder matching your machine.
+## (You may want to make a copy of the folder and go there instead.)
 
-## 4. build afni_docker. 
+## 4. Build afni_docker. 
 ## Must be in the folder with Dockerfile 
 ## or change "." to the path with the Dockerfile
-## docker must already be running
-## (add sudo on Ubuntu for some reason)
+## The docker engine must already be running.
+## (Add sudo to the command on linux if needed.)
 docker build -t afni_docker --progress=plain . 2>&1 | tee build.log
 
 ###############################
-## 5. run afni_docker 
-## docker must already be running
+## 5. Run afni_docker.
 
-################################
-## tested on zsh on macOS arm with XQuartz
+###########################################
+## Tested on zsh on macOS arm with XQuartz.
+## You may want to try the mac_docker_launch pulled from github.
+## It checks a few settings for you. Like the security permissions on XQuartz.
+
+## Expose the ports for X11:
 xhost + ${hostname}
 export HOSTNAME=`hostname`
 
+## Run docker:
 docker run -ti --rm \
        -u afni_user \
        -e DISPLAY=${HOSTNAME}:0 \
@@ -53,16 +60,34 @@ docker run -ti --rm \
 #######################################
 ## tested on bash on Ubuntu 24 x86 intel
 
-
-
-######################################
-## Needs sudo unless you did the above
+## Expose the ports for X11:
 xhost +
 
-sudo docker run -ti --rm \
+## Run docker:
+## Needs sudo unless you did the above.
+docker run -ti --rm \
        -u afni_user \
        -v ${HOME}:/home/external \
        -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
        --network=host \
        --env DISPLAY=$DISPLAY \
        afni_docker
+
+###################################################
+## Experimental testing docker pull from docker hub
+## 06/2025
+## Testing with x86 images. Works on Ubuntu 24 x86 intel so far.
+## Assumes your user is in the docker group so you don't need sudo.
+
+## With the docker engine running, pull the latest image.
+## discoraj A.K.A Justin Rajendra
+docker pull discoraj/afni_docker_x86:latest
+
+xhost +
+docker run -ti --rm \
+       -u afni_user \
+       -v ${HOME}:/home/external \
+       -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+       --network=host \
+       --env DISPLAY=$DISPLAY \
+       discoraj:afni_docker_x86
