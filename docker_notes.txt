@@ -7,7 +7,7 @@
 ## 2. get afni_docker from github
 git clone https://github.com/afni/docker_v1.git
 
-## 3. go to the arm or intel folder matching your machine
+## 3. go to the arm or x86 folder matching your machine
 
 ## 4. build afni_docker. 
 ## Must be in the folder with Dockerfile 
@@ -20,6 +20,7 @@ docker build -t afni_docker --progress=plain . 2>&1 | tee build.log
 ## 5. run afni_docker 
 ## docker must already be running
 
+################################
 ## tested on zsh on macOS arm with XQuartz
 xhost + ${hostname}
 export HOSTNAME=`hostname`
@@ -31,8 +32,25 @@ docker run -ti --rm \
        -v ${HOME}:/home/external      \
        afni_docker
 
-## tested on bash on Ubuntu 24 intel
-## seems to need sudo for Ubuntu
+#######################################
+## tested on bash on Ubuntu 24 x86 intel
+
+#############
+## sudo note:
+## If you don't want to use sudo for all docker commands,
+## you can add your user to a "docker" group.
+## The "docker" group may or may not exist depending on how you 
+## installed docker. To do that you can run:
+
+## add a new group called docker and add the current user to it.
+sudo groupadd docker
+sudo usermod -aG docker $USER
+
+## apply the changes
+newgrp docker
+
+######################################
+## Needs sudo unless you did the above
 xhost +
 
 sudo docker run -ti --rm \
