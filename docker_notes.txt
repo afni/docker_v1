@@ -90,4 +90,4 @@ docker run -ti --rm \
        -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
        --network=host \
        --env DISPLAY=$DISPLAY \
-       discoraj:afni_docker_x86
+       discoraj/afni_docker_x86
