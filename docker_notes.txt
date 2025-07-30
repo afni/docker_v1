@@ -28,6 +28,7 @@ newgrp docker
 git clone https://github.com/afni/docker_v1.git
 
 ## 3. Go to the arm or x86 folder matching your machine.
+## or you can take the universal folder
 ## (You may want to make a copy of the folder and go there instead.)
 
 ## 4. Build afni_docker. 
@@ -75,13 +76,16 @@ docker run -ti --rm \
 
 ###################################################
 ## Experimental testing docker pull from docker hub
-## 06/2025
-## Testing with x86 images. Works on Ubuntu 24 x86 intel so far.
+## 07/2025
+## Testing with universal images. Works on Ubuntu 24 x86 intel so far.
 ## Assumes your user is in the docker group so you don't need sudo.
 
 ## With the docker engine running, pull the latest image.
 ## discoraj A.K.A Justin Rajendra
-docker pull discoraj/afni_docker_x86:latest
+docker pull discoraj/afni_docker_universal:latest
+
+## old version
+# docker pull discoraj/afni_docker_x86:latest
 
 xhost +
 docker run -ti --rm \
@@ -90,4 +94,4 @@ docker run -ti --rm \
        -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
        --network=host \
        --env DISPLAY=$DISPLAY \
-       discoraj/afni_docker_x86
+       discoraj/afni_docker_universal
