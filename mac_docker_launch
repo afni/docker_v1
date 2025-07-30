@@ -1,22 +1,27 @@
 #!/bin/tcsh -f
 
-@global_parse `basename $0` "$*" ; if ($status) exit 0
-
 #################################################
 ## 04/2025 Justin Rajendra
 ## launch the afni docker container on macOS
 ## shouldn't matter if it is arm or intel...
 
 ## get the current program name
-set prog = `basename $0`
+set prog = "mac_docker_launch"
 
 #################################################
-## show help
+## get arguments or show help
+
+## default docker image
+set dock_img = "afni_docker"
+
 set narg = 1
 @  amax = $#argv - 0
 
 while ( $narg <= $amax )
-    if ( "$argv[$narg]" == "-help" || "$argv[$narg]" == "-h" ) then
+    if ( "$argv[$narg]" == "-image" ) then
+        @ narg ++
+        set dock_img  = $argv[$narg]
+    else if ( "$argv[$narg]" == "-help" || "$argv[$narg]" == "-h" ) then
         goto SHOW_HELP
     else
         goto SHOW_HELP
@@ -166,13 +171,13 @@ xhost + `hostname`
 setenv HOSTNAME `hostname`
 
 ## run the docker
-echo ; echo "Launching afni_docker ...beep boop beep boop..." ; echo
+echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
 docker run -ti --rm \
        -u afni_user \
        -e DISPLAY=${HOSTNAME}:0 \
        -v /tmp/.X11-unix:/tmp/.X11-unix \
        -v ${HOME}:/home/external      \
-       afni_docker
+       ${dock_img}
 
 exit 0
 
@@ -204,7 +209,8 @@ https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/container.html
    -----------------------------------------------------------------------------
    options: ~1~
 
-      -help   : Show this help.
+      -image [IMG] : Launch a different docker image. Default is afni_docker.
+      -help        : Show this help.
 
    -----------------------------------------------------------------------------
    examples: ~1~
