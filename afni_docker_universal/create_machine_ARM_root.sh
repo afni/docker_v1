@@ -6,7 +6,7 @@ set -x
 ######################################
 ## update package manager and get some required packages
 apt-get update
-apt install software-properties-common
+apt install -y software-properties-common
 add-apt-repository universe -y
 apt-get update
 apt-get install -y curl tcsh sudo ffmpeg

@@ -10,12 +10,31 @@
 ## installed docker. To add the user to the docker group, you can run:
 
 ## add a new group called docker and add the current user to it.
-sudo groupadd docker
-sudo usermod -aG docker $USER
+
+   sudo groupadd docker
+
+## ... and verify that 'docker' has been added by showing all groups:
+
+   compgen -g
+
+## add the current user to the 'docker' group:
+
+   sudo usermod -aG docker $USER
+
+## ... and verify that the current user is a member of that group by
+## showing all group memberships for the user:
+
+   groups $USER
 
 ## You can try to apply the changes with this, but you may need
 ## to log out or reboot.
-newgrp docker
+
+   newgrp docker
+
+## ... which should show nothing as output if successful.
+## If the 'newgrp ..' command fails and/or demands a password, make
+## sure that both the 'docker' group exists and the $USER is a member
+## of it (see above).
 
 
 ###############################################
@@ -25,21 +44,33 @@ newgrp docker
 ##    https://www.docker.com/get-started/
 
 ## 2. Get afni_docker files from the afni github.
-git clone https://github.com/afni/docker_v1.git
+
+   git clone https://github.com/afni/docker_v1.git
 
 ## 3. Go to the arm or x86 folder matching your machine.
 ## or you can take the universal folder
 ## (You may want to make a copy of the folder and go there instead.)
 
-## 4. Build afni_docker. 
+## 4. Start docker and/or verify it is running.
+## Run this:
+
+   docker
+
+## ... which should show a help file if successful; otherwise, docker
+## is not running (see Ubuntu notes above).
+
+## 5. Build afni_docker. 
 ## Must be in the folder with Dockerfile 
 ## or change "." to the path with the Dockerfile
 ## The docker engine must already be running.
 ## (Add sudo to the command on linux if needed.)
-docker build -t afni_docker --progress=plain . 2>&1 | tee build.log
+
+   docker build -t afni_docker --progress=plain . 2>&1 | tee build.log
+
+## ... which will take a few minutes, depending on the OS resources.
 
 ###############################
-## 5. Run afni_docker.
+## 6. Run afni_docker.
 
 ###########################################
 ## Tested on zsh on macOS arm with XQuartz.
@@ -47,32 +78,36 @@ docker build -t afni_docker --progress=plain . 2>&1 | tee build.log
 ## It checks a few settings for you. Like the security permissions on XQuartz.
 
 ## Expose the ports for X11:
-xhost + ${hostname}
-export HOSTNAME=`hostname`
+
+   xhost + ${hostname}
+   export HOSTNAME=`hostname`
 
 ## Run docker:
-docker run -ti --rm \
-       -u afni_user \
-       -e DISPLAY=${HOSTNAME}:0 \
-       -v /tmp/.X11-unix:/tmp/.X11-unix \
-       -v ${HOME}:/home/external      \
-       afni_docker
+
+   docker run -ti --rm \
+          -u afni_user \
+          -e DISPLAY=${HOSTNAME}:0 \
+          -v /tmp/.X11-unix:/tmp/.X11-unix \
+          -v ${HOME}:/home/external      \
+          afni_docker
 
 #######################################
 ## tested on bash on Ubuntu 24 x86 intel
 
 ## Expose the ports for X11:
-xhost +
+
+   xhost +
 
 ## Run docker:
 ## Needs sudo unless you did the above.
-docker run -ti --rm \
-       -u afni_user \
-       -v ${HOME}:/home/external \
-       -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
-       --network=host \
-       --env DISPLAY=$DISPLAY \
-       afni_docker
+
+   docker run -ti --rm \
+          -u afni_user \
+          -v ${HOME}:/home/external \
+          -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+          --network=host \
+          --env DISPLAY=$DISPLAY \
+          afni_docker
 
 ###################################################
 ## Experimental testing docker pull from docker hub
