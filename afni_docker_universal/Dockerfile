@@ -10,7 +10,6 @@ ARG TARGETPLATFORM
 
 ## add user afni_user in the docker container and give it a home folder
 RUN useradd -m -d /home/afni_user -s /bin/bash afni_user
-RUN usermod -aG sudo afni_user
 
 ## copy root scripts for dependencies
 ENV ROOT_SCRIPT=create_machine_root.sh
