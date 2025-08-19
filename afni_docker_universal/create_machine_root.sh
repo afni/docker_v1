@@ -17,7 +17,12 @@ curl -O https://raw.githubusercontent.com/afni/afni/master/src/other_builds/OS_n
 bash OS_notes.linux_ubuntu_24_64_a_admin.txt
 
 ######################################
-## firefox complicated install because of snap
+## The Docker image from Ubuntu does not include Firefox.
+## Firefox install uses snap by default, which we want to avoid;
+## The following instructions come from here:
+##    https://support.mozilla.org/en-US/kb/install-firefox-linux
+
+## remove the firefox that is installed from OS_notes.linux_ubuntu_24_64_a_admin.txt
 apt-get remove -y firefox
 
 sudo install -d -m 0755 /etc/apt/keyrings
@@ -32,7 +37,6 @@ Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
 
 sudo apt-get update && sudo apt-get install -y firefox
-
 
 ######################################
 ## make folders and links for mounting local host drives and local syncs
