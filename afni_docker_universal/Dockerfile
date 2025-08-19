@@ -11,6 +11,9 @@ ARG TARGETPLATFORM
 ## add user afni_user in the docker container and give it a home folder
 RUN useradd -m -d /home/afni_user -s /bin/bash afni_user
 
+## remove the default ubuntu user that takes uid 1000 (need to ponder this)
+RUN userdel -r ubuntu; usermod -u 1000 afni_user; groupmod -g 1000 afni_user
+
 ## copy root scripts for dependencies
 ENV ROOT_SCRIPT=create_machine_root.sh
 ADD $ROOT_SCRIPT /tmp
