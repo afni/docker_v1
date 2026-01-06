@@ -1,0 +1,19 @@
+## temp notes for docker development 
+
+
+
+docker build --platform=linux/amd64,linux/arm64 -t \
+       discoraj/afni_docker_universal:1.6 --progress=plain  . 2>&1 | tee build.log
+
+## 
+xhost +
+docker run -ti --rm \
+       -u afni_user \
+       -v ${HOME}:/home/external \
+       -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+       --network=host \
+       --env DISPLAY=$DISPLAY \
+       --env USERID=`id -u` \
+       --env GRPID=`id -g` \
+       --env USERNAME=`id -u -n` \
+       discoraj/afni_docker_universal:1.6
