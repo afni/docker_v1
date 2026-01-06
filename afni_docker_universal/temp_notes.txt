@@ -1,13 +1,11 @@
 ## temp notes for docker development 
+## build or run on linux x86
 
 
-
-docker build --platform=linux/amd64,linux/arm64 -t \
-       discoraj/afni_docker_universal:1.6 --progress=plain  . 2>&1 | tee build.log
-
-## 
+## to run by pulling the latest from docker hub directly
+## (easier for testing)
 xhost +
-docker run -ti --rm \
+sudo docker run -ti --rm \
        -u afni_user \
        -v ${HOME}:/home/external \
        -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
@@ -17,3 +15,35 @@ docker run -ti --rm \
        --env GRPID=`id -g` \
        --env USERNAME=`id -u -n` \
        discoraj/afni_docker_universal:1.6
+
+
+##################################
+## or build locally 
+
+## get the code
+git clone https://github.com/afni/docker_v1.git
+
+## go to the docker_v1 folder then:
+cd afni_docker_universal
+
+## to build locally 
+## (x86 version, but you can do both at the same time if you wish
+## just change the platform to "--platform=linux/amd64,linux/arm64")
+sudo docker build --platform=linux/amd64 -t \
+            afni_docker_universal --progress=plain  . 2>&1 | tee build.log
+
+## then run locally
+xhost +
+sudo docker run -ti --rm \
+       -u afni_user \
+       -v ${HOME}:/home/external \
+       -v /tmp/.X11-unix:/tmp/.X11-unix:ro \
+       --network=host \
+       --env DISPLAY=$DISPLAY \
+       --env USERID=`id -u` \
+       --env GRPID=`id -g` \
+       --env USERNAME=`id -u -n` \
+       afni_docker_universal
+
+
+
