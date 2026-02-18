@@ -30,6 +30,9 @@ ENV USER_SCRIPT_x86=create_machine_x86_user.sh
 ADD $USER_SCRIPT_ARM /home/afni_user
 ADD $USER_SCRIPT_x86 /home/afni_user
 
+## compiler options
+ENV LC_ALL=C
+
 ## change to the afni user for the next steps
 USER afni_user
 
@@ -46,5 +49,20 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
 RUN rm -f /home/afni_user/$USER_SCRIPT_ARM
 RUN rm -f /home/afni_user/$USER_SCRIPT_x86
 
-## Default start-up command is just a plain ol' shell for now
-ENTRYPOINT ["/bin/bash"]
+## copy .bashrc for root (temp fix)
+USER root
+RUN cp /home/afni_user/.bashrc /root/
+
+## fix up the user names and ids
+## add stuff to the .bashrc for root
+RUN echo 'groupadd -g "${GRPID}" "${GRPNAME}" ' >> /root/.bashrc
+RUN echo 'usermod -l "${USERNAME}" afni_user ' >> /root/.bashrc
+RUN echo 'usermod -g "${GRPNAME}" "${USERNAME}"' >> /root/.bashrc
+RUN echo 'usermod -u "${USERID}" "${USERNAME}"' >> /root/.bashrc
+RUN echo 'su "${USERNAME}"' >> /root/.bashrc
+RUN echo '    ' >> /root/.bashrc
+
+## go to the host home and bash it
+WORKDIR /home/external
+CMD ["/bin/bash"]
+

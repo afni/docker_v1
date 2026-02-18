@@ -3,7 +3,7 @@
 
 
 ## to run by pulling the latest from docker hub directly
-## (easier for testing)
+## (easier for testing) 
 xhost +
 sudo docker run -ti --rm \
        -u afni_user \
@@ -13,8 +13,9 @@ sudo docker run -ti --rm \
        --env DISPLAY=$DISPLAY \
        --env USERID=`id -u` \
        --env GRPID=`id -g` \
-       --env USERNAME=`id -u -n` \
-       discoraj/afni_docker_universal:1.6
+       --env GRPNAME=`id -gn` \
+       --env USERNAME=`id -un` \
+       discoraj/afni_docker_universal:latest
 
 
 ##################################
