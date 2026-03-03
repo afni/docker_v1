@@ -1,9 +1,11 @@
 FROM ubuntu:24.04
 
-## 08/2025 Justin Rajendra
+## 03/2026 Justin Rajendra
 ## This Dockerfile is meant to build a docker image with afni pre installed
 ## and configured for use on arm and x86 platforms
-## can be run with "--platform=linux/amd64,linux/arm64" during build
+## can be run with "--platform=linux/amd64,linux/arm64" during build 
+## to get both platforms at once. Or just omit the --platform for your local 
+## machine
 
 ## get the target platforms for the different builds
 ARG TARGETPLATFORM
@@ -49,7 +51,7 @@ RUN if [ "$TARGETPLATFORM" = "linux/arm64" ]; then \
 RUN rm -f /home/afni_user/$USER_SCRIPT_ARM
 RUN rm -f /home/afni_user/$USER_SCRIPT_x86
 
-## copy .bashrc for root (temp fix)
+## copy .bashrc for root
 USER root
 RUN cp /home/afni_user/.bashrc /root/
 

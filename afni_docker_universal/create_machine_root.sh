@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## 03/2026 Justin Rajendra
+## admin level install for afni docker on x86 AND arm
+## runs from the Dockerfile as root
+
 ## echo commands to terminal
 set -x
 
@@ -25,6 +29,7 @@ bash OS_notes.linux_ubuntu_24_64_a_admin.txt
 ## remove the firefox that is installed from OS_notes.linux_ubuntu_24_64_a_admin.txt
 apt-get remove -y firefox
 
+## setup repos for firefox
 sudo install -d -m 0755 /etc/apt/keyrings
 wget -q https://packages.mozilla.org/apt/repo-signing-key.gpg -O- | sudo tee /etc/apt/keyrings/packages.mozilla.org.asc > /dev/null
 
@@ -36,6 +41,7 @@ Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 ' | sudo tee /etc/apt/preferences.d/mozilla
 
+## update for new repos and install firefox
 sudo apt-get update && sudo apt-get install -y firefox
 
 ######################################
@@ -47,6 +53,7 @@ mkdir -p /home/afni_user/
 chown -R afni_user:afni_user /home/afni_user/
 chown -R afni_user:afni_user /home/external/
 
+## use the .afnirc from the host machine user's home directory if it exists
 ## ( -h for symbolic link )
 ln -s /home/external/.afnirc /home/afni_user/.afnirc
 chown -h afni_user:afni_user /home/afni_user/.afnirc

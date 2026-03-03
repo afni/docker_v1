@@ -1,8 +1,9 @@
 #!/bin/bash
 
 ###############################################
-## user level install for afni docker on arm
-## suma does not yet work...
+## 03/2026 Justin Rajendra
+## user level install for afni docker on x86
+## runs from the Dockerfile as the "afni_user"
 
 ## echo commands to terminal
 set -x
@@ -23,11 +24,11 @@ curl -O https://afni.nimh.nih.gov/pub/dist/tgz/package_libs/afni_all_progs_COMP.
 tar -xvzf afni_all_progs_COMP.tgz
 rm -f afni_all_progs_COMP.tgz
 
-## do the shell login path updates  (does this add the all_progs.COMP?)
+## do the shell login path updates
 init_user_dotfiles.py -shell_list bash zsh tcsh -do_updates apsearch path \
                       -dir_bin /usr/local/abin -dir_dot /home/afni_user
 
-## add the auto complete manually...(bash works but csh/tcsh does not work)
+## add the auto complete manually...(bash works but csh/tcsh does not work?)
 cat <<EOT >> /home/afni_user/.cshrc
 # set up tab completion for AFNI programs
 # (only do this in an interactive shell)
