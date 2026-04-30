@@ -57,7 +57,8 @@ RUN cp /home/afni_user/.bashrc /root/
 
 ## fix up the user names and ids
 ## add stuff to the .bashrc for root
-RUN echo 'groupadd -g "${GRPID}" "${GRPNAME}" ' >> /root/.bashrc
+RUN echo 'groupadd -gf "${GRPID}" "${GRPNAME}" ' >> /root/.bashrc
+RUN echo 'groupmod -n "${GRPNAME}" afni_user ' >> /root/.bashrc
 RUN echo 'usermod -l "${USERNAME}" afni_user ' >> /root/.bashrc
 RUN echo 'usermod -g "${GRPNAME}" "${USERNAME}"' >> /root/.bashrc
 RUN echo 'usermod -u "${USERID}" "${USERNAME}"' >> /root/.bashrc
