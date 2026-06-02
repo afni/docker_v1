@@ -1,18 +1,19 @@
 #!/bin/tcsh -f
 
 #################################################
-## 04/2025 Justin Rajendra
+## 06/2026 Justin Rajendra
 ## launch the afni docker container on macOS
-## shouldn't matter if it is arm or intel...
+## universal build
 
 ## get the current program name
-set prog = "mac_docker_launch"
+set prog = "mac_afni_docker"
 
 #################################################
 ## get arguments or show help
 
 ## default docker image
-set dock_img = "afni_docker"
+set dock_img = "discoraj/afni_docker_universal:latest"
+set pull = "missing"
 
 set narg = 1
 @  amax = $#argv - 0
@@ -21,6 +22,9 @@ while ( $narg <= $amax )
     if ( "$argv[$narg]" == "-image" ) then
         @ narg ++
         set dock_img  = $argv[$narg]
+    else if ( "$argv[$narg]" == "-latest" ) then
+        @ narg ++
+        set pull = "always"
     else if ( "$argv[$narg]" == "-help" || "$argv[$narg]" == "-h" ) then
         goto SHOW_HELP
     else
@@ -67,25 +71,27 @@ if ( "$xquartz_bin" == "" ) then
 
 endif
 
-# defaults write org.xquartz.X11.plist nolisten_tcp -bool false
-
 ## check for Xquartz security setting
 set xquartz_sec = "`defaults read org.xquartz.X11.plist nolisten_tcp`"
-if ( "$xquartz_sec" == "1" ) then
+set xquartz_auth = "`defaults read org.xquartz.X11 no_auth`"
+if ( "$xquartz_sec" == "1" || "$xquartz_auth" == "0") then
 
     echo ; echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
     echo
-    echo "You can fix this by entering the following command with XQuartz quit:"
+    echo "You can fix this by entering the following command(s) with XQuartz quit:"
     echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
+    echo "defaults write org.xquartz.X11 no_auth -boolean true"
     echo
     echo "OR you can do this in the Security tab of the Settings in XQuartz."
-    echo "Put a check in the 'Allow connections from network clients' box."
+    echo "Uncheck the 'Authenticate connections' box."
+    echo AND
+    echo "Check the 'Allow connections from network clients' box."
     echo
     echo "OR I can fix this for you now."
     echo "Do you want me to fix this? You only have to do this once."
     echo "XQuartz will need to be quit to do this."
     echo
-    echo "Enter Y to quit XQuartz and fix this or enter anything else to quit:"
+    echo "Enter Y to quit XQuartz and fix this or enter anything else to exit:"
     set fix = "$<"
 
     if ( "$fix" == "Y" ) then
@@ -98,6 +104,8 @@ if ( "$xquartz_sec" == "1" ) then
         echo
         echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
         defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+        echo "defaults write org.xquartz.X11 no_auth -boolean true"
+        defaults write org.xquartz.X11 no_auth -bool true
         echo
     else
         echo
@@ -107,11 +115,10 @@ if ( "$xquartz_sec" == "1" ) then
     endif
 endif   ## end check for XQuartz security setting
 
-
 #########################################################
 ## check to see if things are running.  If not, open them
 
-## check for docker running
+## check if docker is running and launch it if not
 ## this file should exist if docker is running
 if ( ! -e unix:///Users/${USER}/.docker/run/docker.sock ) then
 
@@ -128,20 +135,7 @@ if ( ! -e unix:///Users/${USER}/.docker/run/docker.sock ) then
     endif
 endif
 
-## make sure we have the afni_docker image
-## this is here because we need to have docker already running
-## setup later for docker pull
-set afni_img = `docker images afni_docker --format "{{.Repository}}"`
-if ( "$afni_img" == "" ) then
-
-    echo ; echo "** ERROR: The afni_docker image was not found."
-    echo "See instructions here:"
-    echo "https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/container.html"
-    echo ; exit 1
-
-endif
-
-## check for XQuartz running
+## check if XQuartz is running and launch it if not
 set xquart_pid = "`pgrep Xquartz`"
 if ( "$xquart_pid" == "" ) then
 
@@ -163,22 +157,21 @@ if ( "$xquart_pid" == "" ) then
 endif
 
 ###########################################################################
-## setup display and run docker container
-
-## get the display
-echo "Setting display variables."
-xhost + `hostname`
-setenv HOSTNAME `hostname`
+## run docker container
 
 ## run the docker
 echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
 docker run -ti --rm \
-       -u afni_user \
-       -e DISPLAY=${HOSTNAME}:0 \
+       -u root \
+       -v ${HOME}:/home/external \
        -v /tmp/.X11-unix:/tmp/.X11-unix \
-       -v ${HOME}:/home/external      \
+       --env DISPLAY=host.docker.internal:0 \
+       --env USERID=`id -u` \
+       --env GRPID=`id -g` \
+       --env GRPNAME=`id -gn` \
+       --env USERNAME=`id -u -n` \
+       --pull ${pull} \
        ${dock_img}
-
 exit 0
 
 ###########################################################################
@@ -190,37 +183,48 @@ cat << EOF
 
            Helper script to launch the afni docker on macOS.
            This script does not need any arguments.  
-           It will start the afni_docker from any local folder, but you will 
-           start the docker terminal at the container root directory.
 
            REQUIREMENTS:  
            1. This MUST be run on macOS.
            2. Docker MUST be installed.
            3. Xquartz MUST be installed.
-           4. The afni_docker container must be installed.
 
            This script will check for all of the above.
            If Docker and/or Xquartz are not running, the script will
            launch them for you.
 
-           For afni_docker installation check here:
-https://afni.nimh.nih.gov/pub/dist/doc/htmldoc/background_install/container.html
-           
    -----------------------------------------------------------------------------
    options: ~1~
 
-      -image [IMG] : Launch a different docker image. Default is afni_docker.
+      -latest      : Pull a new afni docker image even if an older one exists.
+                     This will overwrite the previous local image with the 
+                     newest one from docker hub.  If the afni docker image 
+                     does not exist locally, the latest will be pulled.
+
+      -image [IMG] : Launch a different docker image.  This can be a local 
+                     image or something from docker hub.
+                     Default is 'discoraj/afni_docker_universal:latest'.
+
       -help        : Show this help.
 
    -----------------------------------------------------------------------------
    examples: ~1~
 
       $prog
+                : Just launch the afni docker.  
+
+      $prog -latest
+                : Launch the afni docker and update the local image.
+
+      $prog -image "Public_Image_Ltd"
+                : Launch the docker with the image named "Public_Image_Ltd".
+                  This will look for the image locally or pull it from docker 
+                  hub.
 
       $prog -help
 
    -----------------------------------------------------------------------------
-   Justin Rajendra 04/2025
+   Justin Rajendra 06/2026
 
 EOF
 
