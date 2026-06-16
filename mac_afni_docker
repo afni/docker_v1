@@ -14,16 +14,19 @@ set prog = "mac_afni_docker"
 ## default docker image
 set dock_img = "discoraj/afni_docker_universal:latest"
 set pull = "missing"
+set disp = "host.docker.internal:0"
 
 set narg = 1
-@  amax = $#argv - 0
+@ amax = $#argv - 0
 
 while ( $narg <= $amax )
     if ( "$argv[$narg]" == "-image" ) then
         @ narg ++
-        set dock_img  = $argv[$narg]
-    else if ( "$argv[$narg]" == "-latest" ) then
+        set dock_img = $argv[$narg]
+    else if ( "$argv[$narg]" == "-display" ) then
         @ narg ++
+        set disp = $argv[$narg]
+    else if ( "$argv[$narg]" == "-latest" ) then
         set pull = "always"
     else if ( "$argv[$narg]" == "-help" || "$argv[$narg]" == "-h" ) then
         goto SHOW_HELP
@@ -165,7 +168,7 @@ docker run -ti --rm \
        -u root \
        -v ${HOME}:/home/external \
        -v /tmp/.X11-unix:/tmp/.X11-unix \
-       --env DISPLAY=host.docker.internal:0 \
+       --env DISPLAY=${disp} \
        --env USERID=`id -u` \
        --env GRPID=`id -g` \
        --env GRPNAME=`id -gn` \
@@ -196,14 +199,21 @@ cat << EOF
    -----------------------------------------------------------------------------
    options: ~1~
 
-      -latest      : Pull a new afni docker image even if an older one exists.
-                     This will overwrite the previous local image with the 
-                     newest one from docker hub.  If the afni docker image 
-                     does not exist locally, the latest will be pulled.
+      -latest        : Pull a new afni docker image even if an older one exists.
+                       This will overwrite the previous local image with the 
+                       newest one from docker hub.  If the afni docker image 
+                       does not exist locally, the latest will be pulled.
 
-      -image [IMG] : Launch a different docker image.  This can be a local 
-                     image or something from docker hub.
-                     Default is 'discoraj/afni_docker_universal:latest'.
+      -image [IMG]    : Launch a different docker image.  This can be a local 
+                        image or something from docker hub.  Please surround 
+                        text in double quotes " ".
+                        Default is "discoraj/afni_docker_universal:latest".
+        
+      -display [DISP] : Use a different display environment variable for 
+                        testing purposes.
+                        Please surround text in double quotes " ".
+                        Default for macOS (as of 06/2026) is:
+                        "host.docker.internal:0"
 
       -help        : Show this help.
 
@@ -218,8 +228,8 @@ cat << EOF
 
       $prog -image "Public_Image_Ltd"
                 : Launch the docker with the image named "Public_Image_Ltd".
-                  This will look for the image locally or pull it from docker 
-                  hub.
+                  This will look for the image locally first then pull it from 
+                  docker hub if it is not found.
 
       $prog -help
 
