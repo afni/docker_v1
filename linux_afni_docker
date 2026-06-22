@@ -1,0 +1,155 @@
+#!/bin/tcsh -f
+
+#################################################
+## 06/2026 Justin Rajendra
+## launch the afni docker container on linux
+## universal build
+
+## get the current program name
+set prog = "linux_afni_docker"
+
+#################################################
+## get arguments or show help
+
+## default docker image
+set dock_img = "discoraj/afni_docker_universal:latest"
+set pull = "missing"
+set disp = "DISPLAY=${DISPLAY}"
+
+set narg = 1
+@  amax = $#argv - 0
+
+while ( $narg <= $amax )
+    if ( "$argv[$narg]" == "-image" ) then
+        @ narg ++
+        set dock_img = $argv[$narg]
+    else if ( "$argv[$narg]" == "-display" ) then
+        @ narg ++
+        set disp = $argv[$narg]
+    else if ( "$argv[$narg]" == "-latest" ) then
+        set pull = "always"
+    else if ( "$argv[$narg]" == "-help" || "$argv[$narg]" == "-h" ) then
+        goto SHOW_HELP
+    else
+        goto SHOW_HELP
+    endif
+    @ narg ++
+end
+
+################################################
+## check to see if things exist / are installed
+
+## check for Linux
+set OpSys = "`uname -s`"
+if ( "$OpSys" != "Linux" ) then
+
+    echo ; echo "** ERROR: You don't seem to be running Linux." ; echo
+    echo "If you are, there may be a problem with this program..."
+    echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
+    exit 1
+
+endif
+
+## check for docker
+set docker_bin = "`where docker`"
+if ( "$docker_bin" == "" ) then
+
+    echo ; echo "** ERROR: Docker not found." ; echo
+    echo "Is Docker installed?"
+    echo "If Docker is installed, can you open it?"
+    echo "If not, check your paths or manually launch it." ; echo
+    exit 1
+
+endif
+
+#########################################################
+## check to see if things are running.  If not, open them
+
+## check if docker is running and launch it if not
+## this file should exist if docker is running
+# if ( ! -e unix:///Users/${USER}/.docker/run/docker.sock ) then
+
+#     if ( ! -e /Users/${USER}/.docker/run/docker.sock ) then
+#         echo ; echo "+* Warning: Docker daemon is not running."
+#         echo "Launching Docker daemon. Please wait."
+#         open -a Docker
+#         sleep 5 ; echo
+
+#         while ( ! -e "/Users/${USER}/.docker/run/docker.sock" ) 
+#             echo "Waiting for Docker daemon..."
+#             sleep 2
+#         end
+#     endif
+# endif
+
+###########################################################################
+## run docker container
+
+## run the docker
+echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
+docker run -ti --rm \
+       -u root \
+       -v ${HOME}:/home/external \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       --env DISPLAY=${disp} \
+       --env USERID=`id -u` \
+       --env GRPID=`id -g` \
+       --env GRPNAME=`id -gn` \
+       --env USERNAME=`id -u -n` \
+       --pull ${pull} \
+       ${dock_img}
+exit 0
+
+###########################################################################
+SHOW_HELP:
+cat << EOF
+
+   ----------------------------------------------------------------------------
+   $prog ~1~
+
+           Helper script to launch the afni docker on most Linux variants.
+           This script does not need any arguments.  
+
+           REQUIREMENTS:  
+           1. This MUST be run on Linux.
+           2. Docker MUST be installed.
+
+           This script will check for all of the above.
+           If Docker is not running, the script will launch it for you.
+
+   -----------------------------------------------------------------------------
+   options: ~1~
+
+      -latest      : Pull a new afni docker image even if an older one exists.
+                     This will overwrite the previous local image with the 
+                     newest one from docker hub.  If the afni docker image 
+                     does not exist locally, the latest will be pulled.
+
+      -image [IMG] : Launch a different docker image.  This can be a local 
+                     image or something from docker hub.
+                     Default is 'discoraj/afni_docker_universal:latest'.
+
+      -help        : Show this help.
+
+   -----------------------------------------------------------------------------
+   examples: ~1~
+
+      $prog
+                : Just launch the afni docker.  
+
+      $prog -latest
+                : Launch the afni docker and update the local image.
+
+      $prog -image "Public_Image_Ltd"
+                : Launch the docker with the image named "Public_Image_Ltd".
+                  This will look for the image locally or pull it from docker 
+                  hub.
+
+      $prog -help
+
+   -----------------------------------------------------------------------------
+   Justin Rajendra 06/2026
+
+EOF
+
+exit 0
