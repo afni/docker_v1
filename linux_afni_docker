@@ -67,11 +67,12 @@ endif
 ######################################################
 ## Check for docker group and if the users is a member.
 
-set docker_grp_exists = `compgen -g | grep docker`
+set docker_grp_exists = `getent group | grep docker`
 if ( "$docker_grp_exists" == "" ) then
 
     echo ; echo "** ERROR: The docker group does not exist." ; echo
-    echo "Please create the docker group and add yourself to it."
+    echo "Please create the docker group (sudo groupadd docker) "
+    echo "and add yourself to it (sudo usermod -aG docker $USER)."
     echo "Then restart your computer."
     echo "If you are in the docker group, there may be a problem with this program..."
     echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
@@ -86,7 +87,7 @@ if ( "$docker_member" == "" ) then
     echo ; echo "** ERROR: You don't seem to be in the docker group." ; echo
     echo "This may cause issues with permissions when running the docker container."
     echo "If you haven't already, you may want to add yourself to the docker "
-    echo "group and restart your computer."
+    echo "group (sudo usermod -aG docker $USER) and restart your computer."
     echo "If you are in the docker group, there may be a problem with this program..."
     echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
     
