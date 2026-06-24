@@ -24,7 +24,6 @@ done
 narg=1
 amax=$#
 
-# Define the help function to replace the tcsh goto label
 show_help() {
 cat << EOF
 
@@ -72,7 +71,6 @@ EOF
 exit 0
 }
 
-# Reverted to index-based while loop
 while [ $narg -le $amax ]; do
     if [ "${argv[$narg]}" = "-image" ]; then
         ((narg++))
