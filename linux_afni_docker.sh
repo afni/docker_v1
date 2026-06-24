@@ -166,10 +166,17 @@ fi
 ## run docker container
 
 ## run the docker
-echo
-echo "Launching ${dock_img} ...beep boop beep boop..."
-echo
+echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
 
-docker run -ti --rm        -u root        -v "${HOME}":/home/external        -v /tmp/.X11-unix:/tmp/.X11-unix        --env DISPLAY="${disp}"        --env USERID="`id -u`"        --env GRPID="`id -g`"        --env GRPNAME="`id -gn`"        --env USERNAME="`id -u -n`"        --pull "${pull}"        "${dock_img}"
-
+docker run -ti --rm \
+           -u root \
+           -v "${HOME}":/home/external \
+           -v /tmp/.X11-unix:/tmp/.X11-unix \
+           --env DISPLAY="${disp}" \
+           --env USERID="`id -u`" \
+           --env GRPID="`id -g`" \
+           --env GRPNAME="`id -gn`" \
+           --env USERNAME="`id -u -n`" \
+           --pull "${pull}" \
+           "${dock_img}"
 exit 0
