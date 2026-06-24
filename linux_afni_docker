@@ -76,7 +76,6 @@ if ( "$docker_grp_exists" == "" ) then
     echo "Then restart your computer."
     echo "If you are in the docker group, there may be a problem with this program..."
     echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
-    
     exit 1
 
 endif
@@ -90,13 +89,12 @@ if ( "$docker_member" == "" ) then
     echo "group (sudo usermod -aG docker $USER) and restart your computer."
     echo "If you are in the docker group, there may be a problem with this program..."
     echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
-    
     exit 1
 
 endif
 
 #########################################################
-## check to see if things are running.  If not, open them
+## check to see if things are running.
 
 set docker_active = `systemctl is-active docker`
 if ( "$docker_active" == "inactive" ) then
@@ -105,7 +103,6 @@ if ( "$docker_active" == "inactive" ) then
     echo "Please start the docker service (sudo systemctl start docker) "
     echo "and try again."
     echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
-    
     exit 1
     
 endif
