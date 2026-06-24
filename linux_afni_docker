@@ -98,22 +98,17 @@ endif
 #########################################################
 ## check to see if things are running.  If not, open them
 
-## check if docker is running and launch it if not
-## this file should exist if docker is running
-# if ( ! -e unix:///Users/${USER}/.docker/run/docker.sock ) then
+set docker_active = `systemctl is-active docker`
+if ( "$docker_active" == "inactive" ) then
 
-#     if ( ! -e /Users/${USER}/.docker/run/docker.sock ) then
-#         echo ; echo "+* Warning: Docker daemon is not running."
-#         echo "Launching Docker daemon. Please wait."
-#         open -a Docker
-#         sleep 5 ; echo
-
-#         while ( ! -e "/Users/${USER}/.docker/run/docker.sock" ) 
-#             echo "Waiting for Docker daemon..."
-#             sleep 2
-#         end
-#     endif
-# endif
+    echo ; echo "** ERROR: Docker is not running." ; echo
+    echo "Please start the docker service (sudo systemctl start docker) "
+    echo "and try again."
+    echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
+    
+    exit 1
+    
+endif
 
 ###########################################################################
 ## run docker container
@@ -145,10 +140,9 @@ cat << EOF
 
            REQUIREMENTS:  
            1. This MUST be run on Linux.
-           2. Docker MUST be installed.
+           2. Docker MUST be installed and running.
 
            This script will check for all of the above.
-           If Docker is not running, the script will launch it for you.
 
    -----------------------------------------------------------------------------
    options: ~1~
