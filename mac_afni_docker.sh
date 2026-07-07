@@ -81,7 +81,6 @@ dock_img="discoraj/afni_docker_universal:latest"
 pull="missing"
 disp="host.docker.internal:0"
 
-# Put all arguments into a bash array (0-indexed)
 argv=("$@")
 narg=0
 amax=$#
