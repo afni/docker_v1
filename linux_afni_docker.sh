@@ -155,12 +155,20 @@ fi
 #########################################################
 ## check to see if things are running.
 docker_active="`systemctl is-active docker`"
-if [ "$docker_active" = "inactive" ]; then
+docker_desktop_active="`systemctl --user is-active docker-desktop`"
+if [ "$docker_active" = "active" ] || [ "$docker_desktop_active" = "active" ]; then
+    echo
+    echo "Docker is running."
+    echo
+else 
     echo
     echo "** ERROR: Docker is not running."
     echo
-    echo "Please start the docker service (sudo systemctl start docker) "
-    echo "and try again."
+    echo "Please start the docker service:"
+    echo "sudo systemctl start docker"
+    echo "or"
+    echo "systemctl --user start docker-desktop"
+    echo "Then try again."
     echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
     echo
     exit 1
