@@ -26,7 +26,8 @@ Before running the container or utilizing the utility scripts, ensure your host 
 ### 1. Building the Container Locally
 If you want to construct the image directly using the localized source files under the universal directory, execute:
 ```bash
-cd afni_docker_universal
+git clone https://github.com/afni/docker_v1.git
+cd docker_v1/afni_docker_universal
 docker build -t afni_universal .
 ```
 
