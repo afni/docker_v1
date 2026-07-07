@@ -21,9 +21,7 @@ Before running the container or utilizing the utility scripts, ensure your host 
 
 ---
 
-## Getting Started
-
-### 1. Building the Container Locally
+## Building the Container Locally
 If you want to construct the image directly using the localized source files under the universal directory, execute:
 ```bash
 git clone https://github.com/afni/docker_v1.git
