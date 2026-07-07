@@ -12,7 +12,7 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 ## Prerequisites
 
-Before running the container or utilizing the utility scripts, ensure your host computer satisfies these system requirements:
+Before running the container or utilizing the launcher scripts, ensure your host computer satisfies these system requirements:
 
 1.  **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running.
 2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
