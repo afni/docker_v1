@@ -16,14 +16,6 @@ dock_img="discoraj/afni_docker_universal:latest"
 pull="missing"
 disp="${DISPLAY}"
 
-argv=("")
-for arg in "$@"; do
-    argv+=("$arg")
-done
-
-narg=1
-amax=$#
-
 show_help() {
 cat << EOF
 
@@ -76,6 +68,14 @@ cat << EOF
 EOF
 exit 0
 }
+
+argv=("")
+for arg in "$@"; do
+    argv+=("$arg")
+done
+
+narg=1
+amax=$#
 
 while [ $narg -le $amax ]; do
     if [ "${argv[$narg]}" = "-image" ]; then
