@@ -27,5 +27,8 @@ If you want to construct the image directly using the localized source files und
 ```bash
 cd afni_docker_universal
 docker build -t afni_universal .
+```
+
+---
 
 This was writen with aI.
