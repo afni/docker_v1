@@ -172,6 +172,7 @@ fi
 ## run the docker
 echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
 
+# xhost +SI:localuser:$USER
 docker run -ti --rm \
            -u root \
            -v "${HOME}":/home/external \
