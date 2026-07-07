@@ -41,14 +41,20 @@ cat << EOF
    -----------------------------------------------------------------------------
    options: ~1~
 
-      -latest      : Pull a new afni docker image even if an older one exists.
-                     This will overwrite the previous local image with the 
-                     newest one from docker hub.
-                     If the afni docker image 
-                     does not exist locally, the latest will be pulled.
-      -image [IMG] : Launch a different docker image.  This can be a local 
-                     image or something from docker hub.
-                     Default is 'discoraj/afni_docker_universal:latest'.
+      -latest         : Pull a new afni docker image even if an older one exists.
+                        This will overwrite the previous local image with the 
+                        newest one from docker hub.
+                        If the afni docker image 
+                        does not exist locally, the latest will be pulled.
+      -image [IMG]    : Launch a different docker image.  This can be a local 
+                        image or something from docker hub.
+                        Default is 'discoraj/afni_docker_universal:latest'.
+      -display [DISP] : Use a different display environment variable for 
+                        testing purposes.
+                        Please surround text in double quotes " ".
+                        Defaults (as of 06/2026) are:
+                        macOS: "host.docker.internal:0"
+                        Linux: DISPLAY environment variable.
 
       -help        : Show this help.
    -----------------------------------------------------------------------------
