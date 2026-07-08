@@ -21,23 +21,41 @@ cat << EOF
    ----------------------------------------------------------------------------
    $prog ~1~
 
-           Helper script to launch the afni docker on macOS and most Linux variants.
-           This script does not need any arguments.  
+           Helper script to launch the afni docker on macOS and most Linux 
+           variants. This script does not need any arguments.  
 
-           REQUIREMENTS:  
-           1. This MUST be run on macOS or Linux (Windows is not yet supported).
+           REQUIREMENTS: ~2~
+           1. This MUST be run on macOS or and most Linux variants.
+              (Windows is not yet supported)
            2. Docker MUST be installed and running.
+           3. On macOS, Xquartz MUST be installed and running.
 
-           On macOS, Xquartz MUST be installed and running.
+           The script will check for all of the above.
 
-           This script will check for all of the above.
+           NOTES: ~2~
+           1. The afni docker will be launched with the current user's home 
+              directory mounted to /home/external in the docker container. 
+              This allows you to access your files from within the docker 
+              container. The Docker program may give you a warning about this,  
+              but it is safe to ignore.
+           2. The docker container will be launched with the current user's 
+              UID and GID. This allows you to create and access files in your 
+              home directory from within the docker container without 
+              permission issues.
+           3. On some Linux variants, the Docker Desktop may block X11 
+              forwarding. If this happens, you can try the -display option 
+              to set a different display environment variable. However, this 
+              may not work and the using Docker engine instead of the the 
+              Docker Desktop may be the only way to fix this issue. Please 
+              see the Docker documentation for more information.
+
    -----------------------------------------------------------------------------
    options: ~1~
 
-      -latest         : Pull a new afni docker image even if an older one exists.
-                        This will overwrite the previous local image with the 
-                        newest one from docker hub. If the afni docker image 
-                        does not exist locally, the latest will be pulled.
+      -latest         : Pull a new afni docker image even if an older one 
+                        exists. This will overwrite the previous local image 
+                        with the newest one from docker hub. If the afni docker 
+                        image does not exist locally, the latest will be pulled.
       -image [IMG]    : Launch a different docker image.  This can be a local 
                         image or something from docker hub.
                         Default is 'discoraj/afni_docker_universal:latest'.
@@ -47,8 +65,8 @@ cat << EOF
                         Defaults (as of 07/2026) are:
                         macOS: "host.docker.internal:0"
                         Linux: DISPLAY environment variable.
+      -help           : Show this help.
 
-      -help        : Show this help.
    -----------------------------------------------------------------------------
    examples: ~1~
 
@@ -60,7 +78,6 @@ cat << EOF
                 : Launch the docker with the image named "Public_Image_Ltd".
                   This will look for the image locally or pull it from docker 
                   hub.
-      $prog -help
 
    -----------------------------------------------------------------------------
    Justin Rajendra 07/2026
@@ -78,7 +95,6 @@ for arg in "$@"; do
 done
 
 narg=1 ; amax=$#
-
 while [ $narg -le $amax ]; do
     if [ "${argv[$narg]}" = "-image" ]; then
         ((narg++))
@@ -95,7 +111,6 @@ while [ $narg -le $amax ]; do
     fi
     ((narg++))
 done
-
 
 #################################################
 ## detect os type and set display variable
@@ -300,6 +315,7 @@ fi   ## end of linux check
 ## run docker container
 
 echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
+# xhost +SI:localuser:$USER
 docker run -ti --rm \
        -u root \
        -v "${HOME}:/home/external" \
