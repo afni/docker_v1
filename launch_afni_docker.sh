@@ -48,6 +48,10 @@ cat << EOF
               may not work and the using Docker engine instead of the the 
               Docker Desktop may be the only way to fix this issue. Please 
               see the Docker documentation for more information.
+           4. To exit the docker container, type 'exit' or 'Ctrl+d' TWICE in 
+              the terminal.  Once to get out user shell and once to exit the 
+              docker container.  If you only type 'exit' or 'Ctrl+d' ONCE, 
+              you will be returned to the root shell in the docker container.
 
    -----------------------------------------------------------------------------
    options: ~1~
@@ -58,13 +62,13 @@ cat << EOF
                         image does not exist locally, the latest will be pulled.
       -image [IMG]    : Launch a different docker image.  This can be a local 
                         image or something from docker hub.
-                        Default is 'discoraj/afni_docker_universal:latest'.
-      -display [DISP] : Use a different display environment variable for 
+                        Default is 'discoraj/afni_docker_universal:latest'
+      -display [DISP] : Use a different display environment variable for
                         testing purposes.
                         Please surround text in double quotes " ".
-                        Defaults (as of 07/2026) are:
-                        macOS: "host.docker.internal:0"
-                        Linux: DISPLAY environment variable.
+                        Default values for DISP (as of 07/2026) are:
+                           "host.docker.internal:0"    (for macOS)
+                           \$DISPLAY                    (for Linux)
       -help           : Show this help.
 
    -----------------------------------------------------------------------------
