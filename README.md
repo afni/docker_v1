@@ -39,7 +39,7 @@ Before running the container or utilizing the launcher script, ensure your host 
 3. The afni docker will be launched with the current user's home 
    directory mounted to /home/external in the docker container. 
    This allows you to access your files from within the docker 
-   container. The Docker program may give you a warning about this,  
+   container. The Docker program may give you a warning about this, 
    but it is safe to ignore.
 4. The docker container will be launched with the current user's 
    UID and GID. This allows you to create and access files in your 
