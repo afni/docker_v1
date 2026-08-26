@@ -48,7 +48,18 @@ cat << EOF
               may not work and the using Docker engine instead of the the 
               Docker Desktop may be the only way to fix this issue. Please 
               see the Docker documentation for more information.
-           4. To exit the docker container, type 'exit' or 'Ctrl+d' TWICE in 
+           4. On Linux, the user needs to be in the docker group to run 
+              this script. If you are not in the docker group, the script 
+              will exit with an error. You need administrative privileges
+              to create the docker group and add yourself to the group. 
+              You can create the docker group with the following command: 
+              "sudo groupadd docker". 
+              You can add yourself to the docker group with the following 
+              command: "sudo usermod -aG docker \$USER".
+              You need to restart your computer or log out and log back in for 
+              the group changes to take effect. Running the script with sudo 
+              will not fix this issue. 
+           5. To exit the docker container, type 'exit' or 'Ctrl+d' TWICE in 
               the terminal.  Once to get out user shell and once to exit the 
               docker container.  If you only type 'exit' or 'Ctrl+d' ONCE, 
               you will be returned to the root shell in the docker container.

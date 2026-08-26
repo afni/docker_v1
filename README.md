@@ -5,30 +5,93 @@ This repository serves as a streamlined, direct approach to building or launchin
 ## Repository Structure
 
 * **`afni_docker_universal/`**: Contains the foundational `Dockerfile` configuration and setup scripts needed to assemble a universal AFNI container environment.
-* **`mac_docker_launch.sh`**: A dedicated shell script wrapper engineered to automate volume mounting, user permission management, and GUI/X11 rendering parameters specifically for macOS users.
-* **`linux_docker_launch.sh`**: Same as above but for linux.
+* **`launch_afni_docker.sh`**: A dedicated shell script wrapper engineered to automate volume mounting, user permission management, and GUI/X11 rendering parameters.
 
 ---
 
 ## Prerequisites
 
-Before running the container or utilizing the launcher scripts, ensure your host computer satisfies these system requirements:
+Before running the container or utilizing the launcher script, ensure your host computer satisfies these system requirements:
 
 1.  **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running.
+    * Docker Desktop on some Linux variants may block connections necessary for X11 windows.  
+      Use the Docker Engine if possible.
 2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
     * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
     * **Linux**: Standard X11 utilities are usually pre-packaged.
 
 ---
 
-## Building the Container Locally
-If you want to construct the image directly using the localized source files under the universal directory, execute:
+## Using the Launching Script
+
+1.  Executing `launch_afni_docker.sh` with no arguments will configure and launch the afni 
+    docker. 
+    * See `launch_afni_docker.sh -help` for more info.
+2. On Linux, the user needs to be in the `docker` group to run this script. 
+   If you are not in the docker group, the script will exit with an error. 
+   You need administrative privileges to create the docker group and add 
+   yourself to the group. You can create the docker group with the following 
+   command: `sudo groupadd docker`. You can add yourself to the docker 
+   group with the following command: `sudo usermod -aG docker $USER`.
+   You need to restart your computer or log out and log back in for 
+   the group changes to take effect. Running the script with `sudo` 
+   will not fix this issue. 
+3. The afni docker will be launched with the current user's home 
+   directory mounted to /home/external in the docker container. 
+   This allows you to access your files from within the docker 
+   container. The Docker program may give you a warning about this,  
+   but it is safe to ignore.
+4. The docker container will be launched with the current user's 
+   UID and GID. This allows you to create and access files in your 
+   home directory from within the docker container without 
+   permission issues.
+5. On some Linux variants, the Docker Desktop may block X11 
+   forwarding. If this happens, you can try the `-display` option 
+   to set a different display environment variable. However, this 
+   may not work and the using Docker engine instead of the the 
+   Docker Desktop may be the only way to fix this issue. Please 
+   see the Docker documentation for more information.
+6. To exit the docker container, type 'exit' or 'Ctrl+d' **TWICE** in 
+   the terminal.  Once to get out user shell and once to exit the 
+   docker container.  If you only type 'exit' or 'Ctrl+d' **ONCE**, 
+   you will be returned to the root shell in the docker container.
+
+---
+
+## Building and Running the Container Locally
+If you want to construct the image directly using the localized source files under the afni_docker_universal directory, execute:
 ```bash
 git clone https://github.com/afni/docker_v1.git
 cd docker_v1/afni_docker_universal
 docker build -t afni_universal .
 ```
 
----
+To run the container on macOS, use:
+```bash
+docker run -ti --rm \
+       -u root \
+       -v "\${HOME}:/home/external" \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       --env DISPLAY="host.docker.internal:0" \
+       --env USERID="`id -u`" \
+       --env GRPID="`id -g`" \
+       --env GRPNAME="`id -gn`" \
+       --env USERNAME="`id -u -n`" \
+       afni_universal
+```
 
-This was writen with Ai.
+To run the container on Linux, use:
+```bash
+docker run -ti --rm \
+       -u root \
+       -v "/${HOME}:/home/external" \
+       -v /tmp/.X11-unix:/tmp/.X11-unix \
+       --env DISPLAY="\${DISPLAY}" \
+       --env USERID="`id -u`" \
+       --env GRPID="`id -g`" \
+       --env GRPNAME="`id -gn`" \
+       --env USERNAME="`id -u -n`" \
+       afni_universal
+```
+
+---
