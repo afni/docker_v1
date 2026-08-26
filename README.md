@@ -70,7 +70,7 @@ To run the container on macOS, use:
 ```bash
 docker run -ti --rm \
        -u root \
-       -v "\${HOME}:/home/external" \
+       -v "${HOME}:/home/external" \
        -v /tmp/.X11-unix:/tmp/.X11-unix \
        --env DISPLAY="host.docker.internal:0" \
        --env USERID="`id -u`" \
@@ -84,9 +84,9 @@ To run the container on Linux, use:
 ```bash
 docker run -ti --rm \
        -u root \
-       -v "/${HOME}:/home/external" \
+       -v "${HOME}:/home/external" \
        -v /tmp/.X11-unix:/tmp/.X11-unix \
-       --env DISPLAY="\${DISPLAY}" \
+       --env DISPLAY="${DISPLAY}" \
        --env USERID="`id -u`" \
        --env GRPID="`id -g`" \
        --env GRPNAME="`id -gn`" \
