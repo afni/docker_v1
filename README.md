@@ -64,7 +64,8 @@ Then restart XQuartz and the terminal for the changes to take effect.
 Then restart XQuartz and the terminal for the changes to take effect.
 
 ## XQuartz Security Settings
-There are two security settings that need to be set correctly for the AFNI/SUMA GUI to display. 
+There are two security settings that need to be set correctly for the 
+AFNI/SUMA GUI to display. 
 1. The first setting is `Allow connections from network clients`.
 2. The second setting is `Authenticate connections`. 
 
@@ -78,8 +79,8 @@ There are two security settings that need to be set correctly for the AFNI/SUMA 
 *(Reverse the above steps if you want to restore the default settings).*
 
 ### To manually set the security settings from the command line, follow these steps:
-
-Open a terminal and run the following commands to allow all connections from unauthenticated network clients:
+Open a terminal and run the following commands to allow all connections from 
+unauthenticated network clients:
 ```bash        
    defaults write org.xquartz.X11.plist nolisten_tcp -bool true
    defaults write org.xquartz.X11 no_auth -boolean false
@@ -113,9 +114,14 @@ Then restart XQuartz and the terminal for the changes to take effect.
 - On Linux, the user needs to be in the `docker` group to run this script. 
    If you are not in the docker group, the script will exit with an error. 
    You need administrative privileges to create the docker group and add 
-   yourself to the group. You can create the docker group with the following 
-   command: `sudo groupadd docker`. You can add yourself to the docker 
-   group with the following command: `sudo usermod -aG docker $USER`.
+   yourself to the group. 
+
+   You can create the docker group with the following command: 
+   `sudo groupadd docker`. 
+
+   You can add yourself to the docker group with the following command: 
+   `sudo usermod -aG docker $USER`.
+   
    You need to restart your computer or log out and log back in for 
    the group changes to take effect. Running the script with `sudo` 
    will not fix this issue. 

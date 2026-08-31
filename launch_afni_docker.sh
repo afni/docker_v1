@@ -312,6 +312,9 @@ fi   ## end of macOS check
 ## checks for linux
 if [[ "$os" == "linux" ]]; then
 
+    ## open up the X11 server to allow connections from docker containers
+    xhost +SI:localuser:$USER
+    
     ######################################################
     ## Check for docker group and if the user is a member.
     docker_grp_exists="`getent group | grep docker`"
