@@ -45,16 +45,17 @@ Before running the container or utilizing the launcher script, ensure your host 
 
 ## macOS Notes
 
-There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displaying. The `launch_afni_docker.sh` script will attempt to set the correct settings. There are two security settings that need to be set correctly for the AFNI/SUMA GUI to display. The first setting is `Allow connections from network clients` and the second setting is `Authenticate connections`. The `launch_afni_docker.sh` script will attempt to set these settings correctly. If the script is unable to set these settings correctly, it will print a warning message. You can manually set these settings by following the steps below.
+There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displaying. The `launch_afni_docker.sh` script will attempt to set the correct settings. There will be prompt to allow the script to set these settings. You can choose to allow or deny this. The warning messages will include instructions on how to manually set these settings if you choose to deny the script permission to set them.
 
-
+There are two security settings that need to be set correctly for the AFNI/SUMA GUI to display. 
+1. The first setting is `Allow connections from network clients`.
+2. The second setting is `Authenticate connections`. 
 
 ### To manually set the security settings, follow these steps:
 1. Open XQuartz and go to `XQuartz` > `Preferences` > `Security`.
 2. Ensure that the option `Allow connections from network clients` is **CHECKED**.
 3. Ensure that the option `Authenticate connections` is **UNCHECKED**.
 4. Restart XQuartz for the changes to take effect.
-
 *Reverse the above steps if you want to restore the default settings.*
 
 
