@@ -47,21 +47,40 @@ Before running the container or utilizing the launcher script, ensure your host 
 
 There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displaying. The `launch_afni_docker.sh` script will attempt to set the correct settings. There will be prompt to allow the script to set these settings. You can choose to allow or deny this. The warning messages will include instructions on how to manually set these settings if you choose to deny the script permission to set them.
 
+### tl;dr
+**To summarize the notes below, the following commands will set the XQuartz security settings and enable indirect GLX rendering:**
+```bash
+   defaults write org.xquartz.X11 nolisten_tcp -bool false
+   defaults write org.xquartz.X11 authenticate -bool false
+   defaults write org.xquartz.X11 enable_iglx -bool true
+```
+Then restart XQuartz and the terminal for the changes to take effect.
+
+**To restore the default settings, run the following commands:**
+```bash
+   defaults write org.xquartz.X11 nolisten_tcp -bool true
+   defaults write org.xquartz.X11 authenticate -bool true
+   defaults write org.xquartz.X11 enable_iglx -bool false
+```
+Then restart XQuartz and the terminal for the changes to take effect.
+
 ### XQuartz Security Settings
 There are two security settings that need to be set correctly for the AFNI/SUMA GUI to display. 
 1. The first setting is `Allow connections from network clients`.
 2. The second setting is `Authenticate connections`. 
 
 **To manually set the security settings from the XQuartz GUI, follow these steps:**
+
 1. Open XQuartz and go to `XQuartz` > `Preferences` > `Security`.
 2. Ensure that the option `Allow connections from network clients` is **CHECKED**.
 3. Ensure that the option `Authenticate connections` is **UNCHECKED**.
 4. Restart XQuartz for the changes to take effect.
 
-*Reverse the above steps if you want to restore the default settings.*
+*(Reverse the above steps if you want to restore the default settings).*
 
 **To manually set the security settings from the command line, follow these steps:**
-Open a terminal and run the following commands to allow connections from unauthenticated network clients:
+
+Open a terminal and run the following commands to allow all connections from unauthenticated network clients:
 ```bash        
    defaults write org.xquartz.X11.plist nolisten_tcp -bool false
    defaults write org.xquartz.X11.plist authenticate -bool false
@@ -75,7 +94,18 @@ Then restart XQuartz and the terminal for the changes to take effect.
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
+### Xquartz indirect GLX setting for SUMA
+To enable indirect GLX rendering, run the following command in a terminal:
+```bash
+   defaults write org.xquartz.X11 enable_iglx -bool true
+```
+Then restart XQuartz and the terminal for the changes to take effect.
 
+*To restore the default settings, run the following commands:*
+```bash
+   defaults write org.xquartz.X11 enable_iglx -bool false
+```
+Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
