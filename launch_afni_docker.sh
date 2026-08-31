@@ -194,6 +194,7 @@ if [[ "$os" == "macos" ]]; then
         echo ; echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
         echo
         echo "You can fix this by entering the following commands with XQuartz quit:"
+        echo
         echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
         echo "defaults write org.xquartz.X11 no_auth -boolean true"
         echo
@@ -229,6 +230,45 @@ if [[ "$os" == "macos" ]]; then
             exit 1
         fi
     fi   ## end check for XQuartz security setting
+
+    #################################################
+    ## check for Xquartz indirect GLX setting
+    xquartz_iglx=`defaults read org.xquartz.X11 enable_iglx 2>/dev/null`
+
+    if [[ "$xquartz_iglx" != "1" ]]; then
+        echo
+        echo "** ERROR: XQuartz indirect GLX is not enabled."
+        echo
+        echo "This setting is needed for OpenGL programs such as SUMA."
+        echo "You can fix this by entering the following command with XQuartz quit:"
+        echo
+        echo "defaults write org.xquartz.X11 enable_iglx -bool true"
+        echo
+        echo "OR I can fix this for you now."
+        echo "Do you want me to fix this? You only have to do this once."
+        echo "XQuartz will need to be restarted for this change to take effect."
+        echo
+
+        read -p "Enter Y to quit XQuartz and fix this or enter anything else to exit: " fix
+
+        if [[ "$fix" == "Y" ]]; then
+            xquart_pid=`pgrep -i Xquartz`
+            if [[ -n "$xquart_pid" ]]; then
+                echo "Killing all XQuartz..."
+                killall Xquartz
+                sleep 2
+            fi
+            echo
+            echo "defaults write org.xquartz.X11 enable_iglx -bool true"
+            defaults write org.xquartz.X11 enable_iglx -bool true
+            echo
+        else
+            echo
+            echo "Please fix the XQuartz setting with the above instructions."
+            echo
+            exit 1
+        fi
+    fi   ## end check for XQuartz indirect GLX setting
 
     #################################################
     ## check if docker is running and launch it if not
