@@ -23,9 +23,9 @@ Before running the container or utilizing the launcher script, ensure your host 
 
 # Using the Launching Script
 
-1.  Executing `launch_afni_docker.sh` with no arguments will configure and launch the afni 
+1.  Executing `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
     docker. 
-    * See `launch_afni_docker.sh -help` for more info.
+    * See `bash launch_afni_docker.sh -help` for more info.
 2. The afni docker will be launched with the current user's home 
    directory mounted to /home/external in the docker container. 
    This allows you to access your files from within the docker 
