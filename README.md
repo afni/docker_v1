@@ -112,25 +112,31 @@ Then restart XQuartz and the terminal for the changes to take effect.
 # Linux Notes
 
 - On Linux, the user needs to be in the `docker` group to run this script. 
-   If you are not in the docker group, the script will exit with an error. 
-   You need administrative privileges to create the docker group and add 
-   yourself to the group. 
+  If you are not in the docker group, the script will exit with an error. 
+  You need administrative privileges to create the docker group and add 
+  yourself to the group. 
 
-   You can create the docker group with the following command: 
-   `sudo groupadd docker`. 
+  You can create the docker group with the following command: 
+  `sudo groupadd docker`. 
 
-   You can add yourself to the docker group with the following command: 
-   `sudo usermod -aG docker $USER`.
-   
-   You need to restart your computer or log out and log back in for 
-   the group changes to take effect. Running the script with `sudo` 
-   will not fix this issue. 
+  You can add yourself to the docker group with the following command: 
+  `sudo usermod -aG docker $USER`.
+
+  You need to restart your computer or log out and log back in for 
+  the group changes to take effect. Running the script with `sudo` 
+  will not fix this issue. 
+
 - On some Linux variants, the Docker Desktop may block X11 
-   forwarding. If this happens, you can try the `-display` option 
-   to set a different display environment variable. However, this 
-   may not work and the using Docker engine instead of the the 
-   Docker Desktop may be the only way to fix this issue. Please 
-   see the Docker documentation for more information.
+  forwarding. If this happens, you can try the `-display` option 
+  to set a different display environment variable. However, this 
+  may not work and the using Docker engine instead of the the 
+  Docker Desktop may be the only way to fix this issue. Please 
+  see the Docker documentation for more information.
+
+- `launch_afni_docker.sh` will set `xhost +SI:localuser:$USER` to allow 
+   the docker container to connect to the X11 server. If you want to 
+   undo this, you can run `xhost -SI:localuser:$USER` after exiting the 
+   docker container.
 
 ---
 
