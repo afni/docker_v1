@@ -49,16 +49,16 @@ There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displ
 ## tl;dr
 **To summarize the notes below, the following commands will set the XQuartz security settings and enable indirect GLX rendering:**
 ```bash
-   defaults write org.xquartz.X11 nolisten_tcp -bool false
-   defaults write org.xquartz.X11 authenticate -bool false
+   defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+   defaults write org.xquartz.X11 no_auth -boolean true
    defaults write org.xquartz.X11 enable_iglx -bool true
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
 **To restore the default settings, run the following commands:**
 ```bash
-   defaults write org.xquartz.X11 nolisten_tcp -bool true
-   defaults write org.xquartz.X11 authenticate -bool true
+   defaults write org.xquartz.X11.plist nolisten_tcp -bool true
+   defaults write org.xquartz.X11 no_auth -boolean false
    defaults write org.xquartz.X11 enable_iglx -bool false
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
@@ -81,15 +81,15 @@ There are two security settings that need to be set correctly for the AFNI/SUMA 
 
 Open a terminal and run the following commands to allow all connections from unauthenticated network clients:
 ```bash        
-   defaults write org.xquartz.X11.plist nolisten_tcp -bool false
-   defaults write org.xquartz.X11.plist authenticate -bool false
+   defaults write org.xquartz.X11.plist nolisten_tcp -bool true
+   defaults write org.xquartz.X11 no_auth -boolean false
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
 *To restore the default settings, run the following commands:*
 ```bash
-   defaults write org.xquartz.X11.plist nolisten_tcp -bool true
-   defaults write org.xquartz.X11.plist authenticate -bool true
+   defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+   defaults write org.xquartz.X11 no_auth -boolean true
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
