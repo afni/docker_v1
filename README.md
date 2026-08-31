@@ -93,7 +93,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-### Xquartz indirect GLX setting for SUMA
+## Xquartz indirect GLX setting for SUMA
 To enable indirect GLX rendering, run the following command in a terminal:
 ```bash
    defaults write org.xquartz.X11 enable_iglx -bool true
@@ -110,7 +110,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 # Linux Notes
 
-1. On Linux, the user needs to be in the `docker` group to run this script. 
+- On Linux, the user needs to be in the `docker` group to run this script. 
    If you are not in the docker group, the script will exit with an error. 
    You need administrative privileges to create the docker group and add 
    yourself to the group. You can create the docker group with the following 
@@ -119,7 +119,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
    You need to restart your computer or log out and log back in for 
    the group changes to take effect. Running the script with `sudo` 
    will not fix this issue. 
-2. On some Linux variants, the Docker Desktop may block X11 
+- On some Linux variants, the Docker Desktop may block X11 
    forwarding. If this happens, you can try the `-display` option 
    to set a different display environment variable. However, this 
    may not work and the using Docker engine instead of the the 
@@ -136,7 +136,7 @@ cd docker_v1/afni_docker_universal
 docker build -t afni_universal .
 ```
 
-To run the container on macOS, use:
+### To run the container on macOS, use:
 ```bash
 docker run -ti --rm \
        -u root \
@@ -150,7 +150,7 @@ docker run -ti --rm \
        afni_universal
 ```
 
-To run the container on Linux, use:
+### To run the container on Linux, use:
 ```bash
 docker run -ti --rm \
        -u root \
