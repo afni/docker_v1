@@ -1,4 +1,4 @@
-AFNI Docker V1 (`docker_v1`)
+# AFNI Docker V1 (`docker_v1`)
 
 This repository serves as a streamlined, direct approach to building or launching containerized versions of **AFNI (Analysis of Functional NeuroImages)**. It aims to reduce dependency conflicts and installation overhead, making it easier to deploy AFNI in a Docker on different operating systems (various Linux distributions and macOS) and on different CPU architectures (Intel/x86, Apple Silicon, ARM).  Windows is not yet supported.
 
@@ -9,20 +9,19 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 ---
 
-## Prerequisites
+# Prerequisites
 
 Before running the container or utilizing the launcher script, ensure your host computer satisfies these system requirements:
 
 1.  **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running.
-    * Docker Desktop on some Linux variants may block connections necessary for X11 windows.  
-      Use the Docker Engine if possible. (See Linux Notes below for more information)
+    * Docker Desktop on some Linux variants may block connections necessary for X11 windows.    Use the Docker Engine if possible. (See Linux Notes below for more information)
 2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
     * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
     * **Linux**: Standard X11 utilities are usually pre-packaged.
 
 ---
 
-## Using the Launching Script
+# Using the Launching Script
 
 1.  Executing `launch_afni_docker.sh` with no arguments will configure and launch the afni 
     docker. 
@@ -43,11 +42,11 @@ Before running the container or utilizing the launcher script, ensure your host 
 
 ---
 
-## macOS Notes
+# macOS Notes
 
 There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displaying. The `launch_afni_docker.sh` script will attempt to set the correct settings. There will be prompt to allow the script to set these settings. You can choose to allow or deny this. The warning messages will include instructions on how to manually set these settings if you choose to deny the script permission to set them.
 
-### tl;dr
+## tl;dr
 **To summarize the notes below, the following commands will set the XQuartz security settings and enable indirect GLX rendering:**
 ```bash
    defaults write org.xquartz.X11 nolisten_tcp -bool false
@@ -64,12 +63,12 @@ Then restart XQuartz and the terminal for the changes to take effect.
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-### XQuartz Security Settings
+## XQuartz Security Settings
 There are two security settings that need to be set correctly for the AFNI/SUMA GUI to display. 
 1. The first setting is `Allow connections from network clients`.
 2. The second setting is `Authenticate connections`. 
 
-**To manually set the security settings from the XQuartz GUI, follow these steps:**
+### To manually set the security settings from the XQuartz GUI, follow these steps:
 
 1. Open XQuartz and go to `XQuartz` > `Preferences` > `Security`.
 2. Ensure that the option `Allow connections from network clients` is **CHECKED**.
@@ -78,7 +77,7 @@ There are two security settings that need to be set correctly for the AFNI/SUMA 
 
 *(Reverse the above steps if you want to restore the default settings).*
 
-**To manually set the security settings from the command line, follow these steps:**
+### To manually set the security settings from the command line, follow these steps:
 
 Open a terminal and run the following commands to allow all connections from unauthenticated network clients:
 ```bash        
@@ -109,7 +108,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
-## Linux Notes
+# Linux Notes
 
 1. On Linux, the user needs to be in the `docker` group to run this script. 
    If you are not in the docker group, the script will exit with an error. 
@@ -129,7 +128,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
-## Building and Running the Container Locally
+# Building and Running the Container Locally
 If you want to construct the image directly using the localized source files under the afni_docker_universal directory, execute:
 ```bash
 git clone https://github.com/afni/docker_v1.git
