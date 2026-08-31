@@ -15,7 +15,7 @@ Before running the container or utilizing the launcher script, ensure your host 
 
 1.  **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running.
     * Docker Desktop on some Linux variants may block connections necessary for X11 windows.  
-      Use the Docker Engine if possible.
+      Use the Docker Engine if possible. (See Linux Notes below for more information)
 2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
     * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
     * **Linux**: Standard X11 utilities are usually pre-packaged.
@@ -45,6 +45,17 @@ Before running the container or utilizing the launcher script, ensure your host 
 
 ### macOS Notes
 
+There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displaying. The `launch_afni_docker.sh` script will attempt to set the correct settings. There are two security settings that need to be set correctly for the AFNI/SUMA GUI to display. The first setting is `Allow connections from network clients` and the second setting is `Authenticate connections`. The `launch_afni_docker.sh` script will attempt to set these settings correctly. If the script is unable to set these settings correctly, it will print a warning message. You can manually set these settings by following the steps below.
+
+
+
+## To manually set the security settings, follow these steps:
+1. Open XQuartz and go to `XQuartz` > `Preferences` > `Security`.
+2. Ensure that the option `Allow connections from network clients` is **CHECKED**.
+3. Ensure that the option `Authenticate connections` is **UNCHECKED**.
+4. Restart XQuartz for the changes to take effect.
+
+*Reverse the above steps if you want to restore the default settings.*
 
 
 ---
