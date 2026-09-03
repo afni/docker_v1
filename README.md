@@ -9,11 +9,34 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 ---
 
-# Prerequisites
+# Running on macOS
 
-Before running the container or utilizing the launcher script, ensure your host computer satisfies these system requirements:
+## Installation
 
-1.  **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running.
+These items should only need to be done once to setup on the computer for using the AFNI docker.
+
+1. **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running
+   Download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/mac-install/).
+   Note your Mac's architecture (Silicon or Intel).
+   NB: add in command line option
+
+2. **X11 Display Server**: Required for interactive GUI elements like the AFNI/SUMA viewer  
+   Download and install [XQuartz](https://www.xquartz.org/).
+   NB: add in command line option
+
+3. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
+   *NB:* You will run this script each time you use the AFNI Docker.
+   ```none
+   cd
+   curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
+   ```
+   or download from here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).
+
+
+
+
+
+
     * Docker Desktop on some Linux variants may block connections necessary for X11 windows.    Use the Docker Engine if possible. (See Linux Notes below for more information)
 2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
     * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
