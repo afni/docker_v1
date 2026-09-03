@@ -4,36 +4,108 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 ## Repository Structure
 
-* **`afni_docker_universal/`**: Contains the foundational `Dockerfile` configuration and setup scripts needed to assemble a universal AFNI container environment.
-* **`launch_afni_docker.sh`**: A dedicated shell script wrapper engineered to automate volume mounting, user permission management, and GUI/X11 rendering parameters.
+* **`afni_docker_universal/`**  
+  Contains the foundational `Dockerfile` configuration and setup scripts needed to assemble a universal AFNI container environment.
+* **`launch_afni_docker.sh`**  
+  A dedicated shell script wrapper engineered to automate volume mounting, user permission management, and GUI/X11 rendering parameters.
 
 ---
 
-# Running on macOS
+# macOS Instructions
 
-## Installation
+## Installation on Mac
 
 These items should only need to be done once to setup on the computer for using the AFNI docker.
 
-1. **Docker**: Ensure Docker Desktop and/or Docker Engine is installed and actively running
+1. **Docker**: The system used for running containers.  
    Download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/mac-install/).
    Note your Mac's architecture (Silicon or Intel).
    NB: add in command line option
 
-2. **X11 Display Server**: Required for interactive GUI elements like the AFNI/SUMA viewer  
+2. **X11 Display Server**: Required for interactive elements like the AFNI and SUMA GUIs.  
    Download and install [XQuartz](https://www.xquartz.org/).
    NB: add in command line option
 
 3. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
-   *NB:* You will run this script each time you use the AFNI Docker.
+   Run:  
    ```none
    cd
    curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
    ```
-   or download from here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).
+   or download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).
+
+---
+
+## Run the AFNI Docker
+
+To run your current available version of AFNI via docker, run:
+```none
+bash launch_afni_docker.sh
+```
+
+Or to get the latest version of AFNI, run:
+```none
+bash launch_afni_docker.sh -latest
+```
+
+See **Using the AFNI Docker**, below, about navigating file structure, exiting the container, and more.
+
+---
+---
+
+# Linux Instructions
+
+## Installation on Linux
+
+These items should only need to be done once to setup on the computer for using the AFNI docker.
+
+1. **Docker**: The system used for running containers.  
+   Follow instructions for your Linux flavor (Ubuntu, Fedora, RedHat, etc.) on the [Docker website](https://docs.docker.com/desktop/setup/install/linux/).
+
+2. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
+   Run:  
+   ```none
+   cd
+   curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
+   ```
+   or download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).
+
+*NB:* If you are using Windows Subsystem Linux (WSL), you will also need to install an X-server, like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
+
+---
+
+## Run the AFNI Docker
+
+To run your current available version of AFNI via docker, run:
+```none
+bash launch_afni_docker.sh
+```
+
+Or to get the latest version of AFNI, run:
+```none
+bash launch_afni_docker.sh -latest
+```
+
+See **Using the AFNI Docker**, below, about navigating file structure, exiting the container, and more.
+
+---
+---
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+ 
+## Mac-specific notes (technical details, already taken care of)
 
 
 
@@ -44,7 +116,7 @@ These items should only need to be done once to setup on the computer for using 
 
 ---
 
-# Using the Launching Script
+# Using the AFNI Docker
 
 1.  Executing `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
     docker. 
