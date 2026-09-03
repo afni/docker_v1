@@ -36,7 +36,7 @@ These items should only need to be done once to setup on the computer for using 
 
 ---
 
-## Run the AFNI Docker
+## Running the AFNI Docker on Mac
 
 To run your current available version of AFNI via docker, run:
 ```none
@@ -74,7 +74,7 @@ These items should only need to be done once to setup on the computer for using 
 
 ---
 
-## Run the AFNI Docker
+## Running the AFNI Docker
 
 To run your current available version of AFNI via docker, run:
 ```none
@@ -91,32 +91,7 @@ See **Using the AFNI Docker**, below, about navigating file structure, exiting t
 ---
 ---
 
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
-## Mac-specific notes (technical details, already taken care of)
-
-
-
-    * Docker Desktop on some Linux variants may block connections necessary for X11 windows.    Use the Docker Engine if possible. (See Linux Notes below for more information)
-2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
-    * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
-    * **Linux**: Standard X11 utilities are usually pre-packaged.
-
----
-
-# Using the AFNI Docker
+# Using the AFNI Docker (Mac, Linux)
 
 1.  Executing `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
     docker. 
@@ -136,6 +111,20 @@ See **Using the AFNI Docker**, below, about navigating file structure, exiting t
    you will be returned to the root shell in the docker container.
 
 ---
+---
+ 
+## Mac-specific notes (technical details, already taken care of)
+
+
+
+    * Docker Desktop on some Linux variants may block connections necessary for X11 windows.    Use the Docker Engine if possible. (See Linux Notes below for more information)
+2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
+    * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
+    * **Linux**: Standard X11 utilities are usually pre-packaged.
+
+---
+
+
 
 # macOS Notes
 
