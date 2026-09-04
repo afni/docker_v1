@@ -11,51 +11,49 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 ---
 
-# macOS Instructions
+# Quick Links
+* [Installation on macOS](#installation-on-macos)
+* [Installation on Linux](#installation-on-linux)
+* [Launching the AFNI Docker](#launching-the-afni-docker)
+* [Using the AFNI Docker](#using-the-afni-docker)
+* [macOS Notes](#macos-notes) 
+* [Linux Notes](#linux-notes)
 
-## Installation on Mac
+---
+
+# Installation on macOS
 
 These items should only need to be done once to setup on the computer for using the AFNI docker.
 
 1. **Docker**: The system used for running containers.  
    Download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/mac-install/).
    Note your Mac's architecture (Silicon or Intel).
-   NB: add in command line option
 
-2. **X11 Display Server**: Required for interactive elements like the AFNI and SUMA GUIs.  
+   If you want to use [Homebrew](https://brew.sh), you can install Docker with the following command:
+   ```none
+   brew install docker
+   ```
+
+2. **XQuartz**: Required for interactive elements like the AFNI and  SUMA GUIs.  
    Download and install [XQuartz](https://www.xquartz.org/).
-   NB: add in command line option
+
+   Or use Homebrew:
+   ```none
+   brew install --cask xquartz
+   ```
 
 3. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
-   Run:  
+Download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).  
+
+   Or download to your home directory from the command line:    
    ```none
    cd
    curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
    ```
-   or download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).
 
 ---
 
-## Running the AFNI Docker on Mac
-
-To run your current available version of AFNI via docker, run:
-```none
-bash launch_afni_docker.sh
-```
-
-Or to get the latest version of AFNI, run:
-```none
-bash launch_afni_docker.sh -latest
-```
-
-See **Using the AFNI Docker**, below, about navigating file structure, exiting the container, and more.
-
----
----
-
-# Linux Instructions
-
-## Installation on Linux
+# Installation on Linux
 
 These items should only need to be done once to setup on the computer for using the AFNI docker.
 
@@ -63,35 +61,37 @@ These items should only need to be done once to setup on the computer for using 
    Follow instructions for your Linux flavor (Ubuntu, Fedora, RedHat, etc.) on the [Docker website](https://docs.docker.com/desktop/setup/install/linux/).
 
 2. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
-   Run:  
+Download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).  
+
+   Or download to your home directory from the command line:    
    ```none
    cd
    curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
-   ```
-   or download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).
 
 *NB:* If you are using Windows Subsystem Linux (WSL), you will also need to install an X-server, like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
 
 ---
 
-## Running the AFNI Docker
+# Launching the AFNI Docker
 
-To run your current available version of AFNI via docker, run:
+To launch your current available version of AFNI via docker, run:
 ```none
 bash launch_afni_docker.sh
 ```
 
-Or to get the latest version of AFNI, run:
+On first run, the script will check for the latest version of AFNI and download it if necessary.
+If you already have a local AFNI Docker, it will be used.
+
+To force the latest version of AFNI, run:
 ```none
 bash launch_afni_docker.sh -latest
 ```
 
-See **Using the AFNI Docker**, below, about navigating file structure, exiting the container, and more.
+See [**Using the AFNI Docker**](#using-the-afni-docker-mac-linux), below, about navigating file structure, exiting the container, and more.
 
 ---
----
 
-# Using the AFNI Docker (Mac, Linux)
+# Using the AFNI Docker
 
 1.  Executing `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
     docker. 
@@ -101,34 +101,22 @@ See **Using the AFNI Docker**, below, about navigating file structure, exiting t
    This allows you to access your files from within the docker 
    container. The Docker program may give you a warning about this, 
    but it is safe to ignore.
-3. The docker container will be launched with the current user's 
-   UID and GID. This allows you to create and access files in your 
-   home directory from within the docker container without 
-   permission issues.
+
 4. To exit the docker container, type 'exit' or 'Ctrl+d' **TWICE** in 
    the terminal.  Once to get out user shell and once to exit the 
    docker container.  If you only type 'exit' or 'Ctrl+d' **ONCE**, 
    you will be returned to the root shell in the docker container.
 
 ---
----
- 
-## Mac-specific notes (technical details, already taken care of)
-
-
-
-    * Docker Desktop on some Linux variants may block connections necessary for X11 windows.    Use the Docker Engine if possible. (See Linux Notes below for more information)
-2.  **X11 Display Server** *(Required for interactive GUI elements like the AFNI/SUMA viewer)*:
-    * **macOS**: Download and install [XQuartz](https://www.xquartz.org/).
-    * **Linux**: Standard X11 utilities are usually pre-packaged.
-
----
-
-
 
 # macOS Notes
 
-There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from displaying. The `launch_afni_docker.sh` script will attempt to set the correct settings. There will be prompt to allow the script to set these settings. You can choose to allow or deny this. The warning messages will include instructions on how to manually set these settings if you choose to deny the script permission to set them.
+There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from 
+displaying. The `launch_afni_docker.sh` script will attempt to set the correct 
+settings. There will be prompt to allow the script to set these settings. You 
+can choose to allow or deny this. The warning messages will include 
+instructions on how to manually set these settings if you choose to deny the 
+script permission to set them.
 
 ## tl;dr
 **To summarize the notes below, the following commands will set the XQuartz security settings and enable indirect GLX rendering:**
@@ -223,6 +211,14 @@ Then restart XQuartz and the terminal for the changes to take effect.
    docker container.
 
 ---
+
+# Technical Details
+
+ * The docker container will be launched with the current user's 
+   UID and GID. This allows you to create and access files in your 
+   home directory from within the docker container without 
+   permission issues.
+* By default the `launch_afni_docker.sh` will pull the latest version of the AFNI docker image from Docker Hub on first run or with the `-latest` option. Currently the Docker Hub repository is owned by Justin Rajendra (DiscoRaj) from the AFNI Group (SSCC at the NIH). You can find the Docker Hub repository [here](https://hub.docker.com/repository/docker/discoraj/afni_docker_universal/general).
 
 # Building and Running the Container Locally
 If you want to construct the image directly using the localized source files under the afni_docker_universal directory, execute:
