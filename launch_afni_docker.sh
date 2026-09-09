@@ -8,10 +8,16 @@
 ## get the current program name
 prog="launch_afni_docker.sh"
 
-## default docker image
-dock_img="discoraj/afni_docker_universal:latest"
+## default docker image settings
+do_run=0
+show_cmd=0
+base_img="discoraj/afni_docker_universal"
+base_tag="latest"
+dock_img=""
 pull="missing"
 disp=""
+disp_macos="host.docker.internal:0"
+disp_linux="$DISPLAY" ; disp_linux_help='$DISPLAY' # help file shows literal
 
 #################################################
 ## help!
@@ -26,9 +32,11 @@ cat << EOF
 
            REQUIREMENTS: ~2~
 
-           1. This MUST be run on macOS or and most Linux variants
+           1. This MUST be run on macOS or a flavor of Linux
               (Windows is not yet supported, besides WSL).
+
            2. Docker MUST be installed and running.
+
            3. On macOS, Xquartz MUST be installed and running.
 
            The script will check for all of the above.
@@ -58,9 +66,10 @@ cat << EOF
               will exit with an error. You need administrative privileges
               to create the docker group and add yourself to the group. 
               You can create the docker group with the following command: 
-              "sudo groupadd docker". 
+                 sudo groupadd docker
               You can add yourself to the docker group with the following 
-              command: "sudo usermod -aG docker \$USER".
+              command: 
+                 sudo usermod -aG docker \$USER
               You need to restart your computer or log out and log back in for 
               the group changes to take effect. Running the script with sudo 
               will not fix this issue. 
@@ -73,40 +82,59 @@ cat << EOF
    -----------------------------------------------------------------------------
    Options: ~1~
 
-      -latest         : Pull a new afni docker image even if an older one 
-                        exists. This will overwrite the previous local image 
-                        with the newest one from docker hub. If the afni docker 
-                        image does not exist locally, the latest will be pulled.
+      -run            : flag to launch the AFNI docker
 
-      -image [IMG]    : Launch a different docker image.  This can be a local 
-                        image or something from docker hub.
-                        Default is 'discoraj/afni_docker_universal:latest'
+      -tag TAG        : Specify which version of AFNI to run, corresponding
+                        to any of the available Docker Hub tagged versions.  
+                        The value of TAG can be the full AFNI version
+                        string or simple version number, like:
 
-      -display [DISP] : Use a different display environment variable for
+                           AFNI_26.0.01
+                           26.0.01
+
+                        or TAG can be a keyword:
+
+                           latest   : pull new docker image to get latest 
+                                      version of AFNI that is distributed, 
+                                      (overwrites any previous AFNI docker
+                                      images)
+
+                        If this option is not used, then the AFNI docker
+                        version present on the OS will be used (if none exists,
+                        the latest version will be pulled from Docker Hub)
+
+      -display "DISP" : Use a different display environment variable for
                         testing purposes.
                         Please surround text in double quotes " ".
-                        Default values for DISP (as of 07/2026) are:
-                           "host.docker.internal:0"    (for macOS)
-                           \$DISPLAY                    (for Linux)
+                        Default values for DISP are:
 
-      -help           : Show this help.
+                           for macOS : "${disp_macos}"
+                           for linux : "${disp_linux_help}"
+
+      -image IMAGE    : The base name of the docker hub image.  Changing
+                        this would launch a different docker image, so it
+                        does not ever need to be used to keep using the AFNI
+                        docker
+                        (def : ${base_img})
+
+      -show_cmd       : Display the 'docker run ...' command when launching
+
+      -help           : Show this help (also shown if no options provided)
 
    -----------------------------------------------------------------------------
    Examples: ~1~
 
       1. Just launch the afni docker:
 
-           bash ${prog}
+           bash ${prog} -run
 
       2. Launch the afni docker and update the local image:
 
-           bash ${prog} -latest
+           bash ${prog} -tag latest
 
-      3. Launch the docker with the image named "Public_Image_Ltd".
-         This will look for the image locally or pull it from Docker Hub:
+      3. Launch the afni docker and see what the run command is:
 
-           bash ${prog} -image "Public_Image_Ltd"
-
+           bash ${prog} -run -show_cmd
 
    -----------------------------------------------------------------------------
    Justin Rajendra 07/2026
@@ -118,6 +146,14 @@ exit 0
 #################################################
 ## get arguments or show help
 
+# no args -> show help and exit
+
+if [ "$#" = "0" ]; then
+    show_help
+fi
+
+# proc args
+
 argv=("")
 for arg in "$@"; do
     argv+=("$arg")
@@ -125,21 +161,45 @@ done
 
 narg=1 ; amax=$#
 while [ $narg -le $amax ]; do
-    if [ "${argv[$narg]}" = "-image" ]; then
+    if [ "${argv[$narg]}" = "-run" ]; then
+        do_run=1
+    elif [ "${argv[$narg]}" = "-show_cmd" ]; then
+        show_cmd=1
+    elif [ "${argv[$narg]}" = "-image" ]; then
         ((narg++))
-        dock_img="${argv[$narg]}"
+        base_img="${argv[$narg]}"
+    elif [ "${argv[$narg]}" = "-tag" ]; then
+        ((narg++))
+        base_tag="${argv[$narg]}"
     elif [ "${argv[$narg]}" = "-display" ]; then
         ((narg++))
         disp="${argv[$narg]}"
-    elif [ "${argv[$narg]}" = "-latest" ]; then
-        pull="always"
-    elif [ "${argv[$narg]}" = "-help" ] || [ "${argv[$narg]}" = "-h" ]; then
+    elif [ "${argv[$narg]}" = "-help" ] || \
+         [ "${argv[$narg]}" = "-h" ]; then
         show_help
     else
         show_help
     fi
     ((narg++))
 done
+
+#################################################
+## did user add -run?
+
+if [[ ${do_run} = 0 ]]; then
+    echo "** User entered options but no '-run' flag." 
+    echo "   Please add '-run' to launch docker, or use '-help' to see help"
+    exit 1
+fi
+
+#################################################
+## build docker image name
+
+dock_img="${base_img}:${base_tag}"
+
+if [[ "${base_tag}" == "latest" ]]; then
+    pull="always"
+fi
 
 #################################################
 ## detect os type and set display variable
@@ -149,19 +209,22 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     os="macos"
     ## set default display variable if not set
     if [[ -z "$disp" ]]; then
-        disp="host.docker.internal:0"
+        disp="${disp_macos}"
     fi
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # echo "Running on Linux"
     os="linux"
     ## set default display variable if not set
     if [[ -z "$disp" ]]; then
-        disp="${DISPLAY}"
+        disp="${disp_linux}"
     fi
 else
-    echo ; echo "** ERROR: You don't seem to be running on a supported OS." ; echo
-    echo "If you are, there may be a problem with this program..."
-    echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
+    echo ; 
+    echo "** ERROR: You don't seem to be running on a supported OS."
+    echo
+    echo "   If you are, there may be a problem with this program..."
+    echo "   Please post the error to: https://discuss.afni.nimh.nih.gov"
+    echo
     exit 1
 fi
 
@@ -174,9 +237,9 @@ if [[ -z "$docker_bin" ]]; then
     echo
     echo "** ERROR: Docker not found."
     echo
-    echo "Is Docker installed?"
-    echo "Installation instructions can be found at: "
-    echo "https://docs.docker.com/engine/"
+    echo "   Is Docker installed?"
+    echo "   Installation instructions can be found at: "
+    echo "   https://docs.docker.com/engine/"
     echo
     exit 1
 fi
@@ -190,11 +253,15 @@ if [[ "$os" == "macos" ]]; then
     xquartz_bin=`command -v Xquartz || command -v XQuartz`
     if [[ -z "$xquartz_bin" ]]; then
         ## Fallback in case it is installed but not in PATH
-        if [[ ! -d "/Applications/Utilities/XQuartz.app" && ! -d "/Applications/XQuartz.app" ]]; then
-            echo ; echo "** ERROR: XQuartz not found." ; echo
-            echo "Is XQuartz installed and in your PATH?"
-            echo "If not, you can install it from homebrew"
-            echo "or from here: https://www.xquartz.org" ; echo
+        if [[ ! -d "/Applications/Utilities/XQuartz.app" && \
+              ! -d "/Applications/XQuartz.app" ]]; then
+            echo
+            echo "** ERROR: XQuartz not found." 
+            echo
+            echo "   Is XQuartz installed and in your PATH?"
+            echo "   If not, you can install it from homebrew"
+            echo "   or from here: https://www.xquartz.org"
+            echo
             exit 1
         fi
     fi   ## end of installed XQuartz check
@@ -205,26 +272,31 @@ if [[ "$os" == "macos" ]]; then
     xquartz_auth=`defaults read org.xquartz.X11 no_auth`
 
     if [[ "$xquartz_sec" == "1" || "$xquartz_auth" == "0" ]]; then
-        echo ; echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
-        echo
-        echo "You can fix this by entering the following commands with XQuartz quit:"
-        echo
-        echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
-        echo "defaults write org.xquartz.X11 no_auth -boolean true"
-        echo
-        echo "OR you can do this in the Security tab of the Settings in XQuartz."
-        echo "Uncheck the 'Authenticate connections' box."
-        echo "AND"
-        echo "Check the 'Allow connections from network clients' box."
-        echo
-        echo "OR I can fix this for you now."
-        echo "Do you want me to fix this? You only have to do this once."
-        echo "XQuartz will need to be quit to do this."
-        echo
-        
-        read -p "Enter Y to quit XQuartz and fix this or enter anything else to exit: " fix
+        cat <<EOF
 
-        if [[ "$fix" == "Y" ]]; then
+** ERROR: XQuartz is blocking tcp clients needed for docker.
+
+   You can fix this by entering the following commands with XQuartz quit:
+
+     defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+     defaults write org.xquartz.X11 no_auth -boolean true
+
+   OR you can do this in the Security tab of the Settings in XQuartz:
+
+     Uncheck the 'Authenticate connections' box.
+     AND
+     Check the 'Allow connections from network clients' box.
+
+   OR I can fix this for you now.
+
+     Do you want me to fix this? You only have to do this once.
+     XQuartz will need to be quit to do this.
+
+EOF
+
+        read -p "  Should I quit XQuartz and fix this? y/[n]" fix
+
+        if [[ "$fix" == "y" ]]; then
             xquart_pid=`pgrep -i Xquartz`
             if [[ -n "$xquart_pid" ]]; then
                 echo "Killing all XQuartz..."
@@ -250,25 +322,28 @@ if [[ "$os" == "macos" ]]; then
     xquartz_iglx=`defaults read org.xquartz.X11 enable_iglx 2>/dev/null`
 
     if [[ "$xquartz_iglx" != "1" ]]; then
-        echo
-        echo "** ERROR: XQuartz indirect GLX is not enabled."
-        echo
-        echo "This setting is needed for OpenGL programs such as SUMA."
-        echo "You can fix this by entering the following command with XQuartz quit:"
-        echo
-        echo "defaults write org.xquartz.X11 enable_iglx -bool true"
-        echo
-        echo "OR I can fix this for you now."
-        echo "Do you want me to fix this? You only have to do this once."
-        echo "XQuartz will need to be restarted for this change to take effect."
-        echo
+        cat <<EOF
 
-        read -p "Enter Y to quit XQuartz and fix this or enter anything else to exit: " fix
+** ERROR: XQuartz indirect GLX is not enabled.
 
-        if [[ "$fix" == "Y" ]]; then
+   This setting is needed for OpenGL programs such as SUMA.
+   You can fix this by entering the following command with XQuartz quit:
+
+     defaults write org.xquartz.X11 enable_iglx -bool true
+
+   OR I can fix this for you now.
+
+     Do you want me to fix this? You only have to do this once.
+     XQuartz will need to be restarted for this change to take effect.
+
+EOF
+
+        read -p "  Should I quit XQuartz and fix this? y/[n]" fix
+
+        if [[ "$fix" == "y" ]]; then
             xquart_pid=`pgrep -i Xquartz`
             if [[ -n "$xquart_pid" ]]; then
-                echo "Killing all XQuartz..."
+                echo "++ Killing all XQuartz..."
                 killall Xquartz
                 sleep 2
             fi
@@ -278,7 +353,7 @@ if [[ "$os" == "macos" ]]; then
             echo
         else
             echo
-            echo "Please fix the XQuartz setting with the above instructions."
+            echo "++ Please fix the XQuartz setting with above instructions."
             echo
             exit 1
         fi
@@ -290,12 +365,12 @@ if [[ "$os" == "macos" ]]; then
     ## this file should exist if docker is running
     if [[ ! -e "/Users/${USER}/.docker/run/docker.sock" ]]; then
         echo ; echo "+* Warning: Docker daemon is not running."
-        echo "Launching Docker daemon. Please wait."
+        echo "++ Launching Docker daemon. Please wait."
         open -a Docker
         sleep 5 ; echo
 
         while [[ ! -e "/Users/${USER}/.docker/run/docker.sock" ]]; do 
-            echo "Waiting for Docker daemon..."
+            echo "++ Waiting for Docker daemon..."
             sleep 2
         done
     fi   ## end launch docker if not running
@@ -305,14 +380,14 @@ if [[ "$os" == "macos" ]]; then
     xquart_pid=`pgrep -i Xquartz`
     if [[ -z "$xquart_pid" ]]; then
         echo ; echo "+* Warning: Xquartz is not running."
-        echo "Launching Xquartz. Please wait."
+        echo "++ Launching Xquartz. Please wait."
         open -a XQuartz
         sleep 5 ; echo
 
         while true; do 
             xquart_pid=`pgrep -i Xquartz`
             if [[ -z "$xquart_pid" ]]; then
-                echo "Waiting for Xquartz..."
+                echo "++ Waiting for Xquartz..."
                 sleep 2
             else
                 break
@@ -333,29 +408,44 @@ if [[ "$os" == "linux" ]]; then
     ## Check for docker group and if the user is a member.
     docker_grp_exists="`getent group | grep docker`"
     if [ "$docker_grp_exists" = "" ]; then
-        echo
-        echo "** ERROR: The docker group does not exist."
-        echo
-        echo "Please create the docker group (sudo groupadd docker) "
-        echo "and add yourself to it (sudo usermod -aG docker $USER)."
-        echo "Then restart your computer."
-        echo "If you are in the docker group, there may be a problem with this program..."
-        echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
-        echo
+        cat <<EOF
+
+** ERROR: The docker group does not exist.
+
+   Please create the docker group:
+
+     sudo groupadd docker
+
+   and add yourself to it:
+
+     sudo usermod -aG docker \$USER
+
+   Then restart your computer.
+
+   If you are in the docker group, there may be a problem with this program...
+   Please post the error to: https://discuss.afni.nimh.nih.gov
+
+EOF
         exit 1
     fi
 
     docker_member="`groups $USER | grep docker`"
     if [ "$docker_member" = "" ]; then
-        echo
-        echo "** ERROR: You don't seem to be in the docker group."
-        echo
-        echo "This may cause issues with permissions when running the docker container."
-        echo "If you haven't already, you may want to add yourself to the docker "
-        echo "group (sudo usermod -aG docker $USER) and restart your computer."
-        echo "If you are in the docker group, there may be a problem with this program..."
-        echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
-        echo
+cat <<EOF
+
+** ERROR: You don't seem to be in the docker group.
+   This may cause issues with permissions when running the docker container.
+   If you haven't already, you may want to add yourself to the docker group:
+
+     sudo usermod -aG docker \$USER
+
+   and restart your computer.
+
+   If you are in the docker group, there may be a problem with this program...
+   Please post the error to: https://discuss.afni.nimh.nih.gov
+
+EOF
+
         exit 1
     fi   ## end of docker group check
 
@@ -363,21 +453,28 @@ if [[ "$os" == "linux" ]]; then
     ## check to see if docker is running.
     docker_active="`systemctl is-active docker`"
     docker_desktop_active="`systemctl --user is-active docker-desktop`"
-    if [ "$docker_active" = "active" ] || [ "$docker_desktop_active" = "active" ]; then
+    if [ "$docker_active" = "active" ] || \
+       [ "$docker_desktop_active" = "active" ]; then
         echo
-        echo "Docker is running."
+        echo "++ Docker is running."
         echo
     else 
-        echo
-        echo "** ERROR: Docker is not running."
-        echo
-        echo "Please start the docker service:"
-        echo "sudo systemctl start docker"
-        echo "or"
-        echo "systemctl --user start docker-desktop"
-        echo "Then try again."
-        echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
-        echo
+        cat <<EOF
+
+** ERROR: Docker is not running.
+   Please start the docker service:
+
+     sudo systemctl start docker
+
+   or
+
+     systemctl --user start docker-desktop
+
+   Then try again.
+   Please post the error to: https://discuss.afni.nimh.nih.gov
+
+EOF
+
         exit 1
     fi   ## end of docker running check
 
@@ -386,17 +483,51 @@ fi   ## end of linux check
 ###########################################################################
 ## run docker container
 
-echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
+cat <<EOF
+
+++ Launching: ${dock_img}
+
+   ...beep boop beep boop...
+
+EOF
+
+# display command if user asked 
+
+if [ ${show_cmd} = 1 ]; then
+
+cat <<EOF
+++ Launching AFNI docker with this command:
+   ------------------------------------------------
+    docker run -ti --rm                          \\
+        -u      root                             \\
+        -v      "${HOME}:/home/external" \\
+        -v      /tmp/.X11-unix:/tmp/.X11-unix    \\
+        --env   DISPLAY="${disp}" \\
+        --env   USERID="`id -u`"                 \\
+        --env   GRPID="`id -g`"                  \\
+        --env   GRPNAME="`id -gn`"               \\
+        --env   USERNAME="`id -u -n`"            \\
+        --pull  "${pull}"                        \\
+        "${dock_img}"
+   ------------------------------------------------
+
+EOF
+
+fi
+
+# finally, launch the docker
+
 # xhost +SI:localuser:$USER
-docker run -ti --rm \
-       -u root \
-       -v "${HOME}:/home/external" \
-       -v /tmp/.X11-unix:/tmp/.X11-unix \
-       --env DISPLAY="${disp}" \
-       --env USERID="`id -u`" \
-       --env GRPID="`id -g`" \
-       --env GRPNAME="`id -gn`" \
-       --env USERNAME="`id -u -n`" \
-       --pull "${pull}" \
-       "${dock_img}"
+docker run -ti --rm                          \
+    -u      root                             \
+    -v      "${HOME}:/home/external"         \
+    -v      /tmp/.X11-unix:/tmp/.X11-unix    \
+    --env   DISPLAY="${disp}"                \
+    --env   USERID="`id -u`"                 \
+    --env   GRPID="`id -g`"                  \
+    --env   GRPNAME="`id -gn`"               \
+    --env   USERNAME="`id -u -n`"            \
+    --pull  "${pull}"                        \
+    "${dock_img}"
+
 exit 0
