@@ -72,7 +72,7 @@ like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
 
 # Launching the AFNI Docker (any OS)
 
-To launch your currently available version of AFNI via docker, simply run the launcher script:
+To launch your **current** version of AFNI via docker, simply run the launcher script:
 ```none
 bash launch_afni_docker.sh
 ```
@@ -80,7 +80,7 @@ bash launch_afni_docker.sh
 The first time it is run, the script will check for the latest version of AFNI and download it if necessary.
 If you already have a local AFNI Docker, that same version will be used.
 
-To get+launch the latest version of AFNI, run:
+To launch the **latest** distributed version of AFNI, run:
 ```none
 bash launch_afni_docker.sh -latest
 ```
@@ -126,7 +126,7 @@ can choose to allow or deny this. The warning messages will include
 instructions on how to manually set these settings if you choose to deny the 
 script permission to set them.
 
-## tl;dr
+## All XQuartz settings: tl;dr
 To summarize the macOS notes below, the following commands will **set** the 
 XQuartz security settings and **enable** indirect GLX rendering:
 ```bash
@@ -144,13 +144,14 @@ To **restore** the default settings, run:
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-## XQuartz Security Settings
-There are two security settings that need to be set correctly for the 
-AFNI and SUMA GUIs to display. 
-1. The first setting is `Allow connections from network clients`.
-2. The second setting is `Authenticate connections`. 
+## XQuartz settings: security
 
-### To manually set the security settings from the XQuartz GUI, follow these steps:
+There are two security settings that need to be set correctly for the 
+AFNI and SUMA GUIs to display: 
+1. `Allow connections from network clients`
+2. `Authenticate connections`
+
+### Managing XQuartz security settings from the GUI
 
 1. Open XQuartz and go to `XQuartz` > `Preferences` > `Security`.
 2. Ensure that the option `Allow connections from network clients` is **CHECKED**.
@@ -159,7 +160,7 @@ AFNI and SUMA GUIs to display.
 
 *(Reverse the above steps if you want to restore the default settings).*
 
-### To manually set the security settings from the command line, follow these steps:
+### Managing XQuartz security settings from the command line
 To **allow** all connections from unauthenticated network clients, run:
 ```bash        
    defaults write org.xquartz.X11.plist nolisten_tcp -bool true
@@ -174,7 +175,10 @@ To **restore** the default settings, run:
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-## Xquartz indirect GLX setting for SUMA
+## Xquartz settings: indirect GLX
+
+This setting is needed to enable the SUMA GUI to run properly.
+
 To **enable** indirect GLX rendering, run:
 ```bash
    defaults write org.xquartz.X11 enable_iglx -bool true
