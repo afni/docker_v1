@@ -127,7 +127,8 @@ instructions on how to manually set these settings if you choose to deny the
 script permission to set them.
 
 ## tl;dr
-**To summarize the notes below, the following commands will set the XQuartz security settings and enable indirect GLX rendering:**
+To summarize the macOS notes below, the following commands will **set** the 
+XQuartz security settings and **enable** indirect GLX rendering:
 ```bash
    defaults write org.xquartz.X11.plist nolisten_tcp -bool false
    defaults write org.xquartz.X11 no_auth -boolean true
@@ -135,7 +136,7 @@ script permission to set them.
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-**To restore the default settings, run the following commands:**
+To **restore** the default settings, run:
 ```bash
    defaults write org.xquartz.X11.plist nolisten_tcp -bool true
    defaults write org.xquartz.X11 no_auth -boolean false
@@ -145,7 +146,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ## XQuartz Security Settings
 There are two security settings that need to be set correctly for the 
-AFNI/SUMA GUI to display. 
+AFNI and SUMA GUIs to display. 
 1. The first setting is `Allow connections from network clients`.
 2. The second setting is `Authenticate connections`. 
 
@@ -159,15 +160,14 @@ AFNI/SUMA GUI to display.
 *(Reverse the above steps if you want to restore the default settings).*
 
 ### To manually set the security settings from the command line, follow these steps:
-Open a terminal and run the following commands to allow all connections from 
-unauthenticated network clients:
+To **allow** all connections from unauthenticated network clients, run:
 ```bash        
    defaults write org.xquartz.X11.plist nolisten_tcp -bool true
    defaults write org.xquartz.X11 no_auth -boolean false
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-*To restore the default settings, run the following commands:*
+To **restore** the default settings, run:
 ```bash
    defaults write org.xquartz.X11.plist nolisten_tcp -bool false
    defaults write org.xquartz.X11 no_auth -boolean true
@@ -175,13 +175,13 @@ Then restart XQuartz and the terminal for the changes to take effect.
 Then restart XQuartz and the terminal for the changes to take effect.
 
 ## Xquartz indirect GLX setting for SUMA
-To enable indirect GLX rendering, run the following command in a terminal:
+To **enable** indirect GLX rendering, run:
 ```bash
    defaults write org.xquartz.X11 enable_iglx -bool true
 ```
 Then restart XQuartz and the terminal for the changes to take effect.
 
-*To restore the default settings, run the following commands:*
+To **restore** the default settings, run:
 ```bash
    defaults write org.xquartz.X11 enable_iglx -bool false
 ```
