@@ -53,18 +53,19 @@ These items should only need to be done once to setup on the computer for using 
 
 These items should only need to be done once to setup on the computer for using the AFNI docker.
 
-1. **Docker**: The system used for running containers.  
-   Follow instructions for your Linux flavor (Ubuntu, Fedora, RedHat, etc.) on the [Docker website](https://docs.docker.com/desktop/setup/install/linux/).
+1. **Docker**: *The system used for running containers.*  
+   Download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/linux/)
+   (noting your Linux flavor: Ubuntu, Fedora, RedHat, etc.),
 
-2. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
-Download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).  
-
-   Or download to your home directory from the command line:    
+3. **Launcher script**: *The all-in-one executable script that runs the AFNI Docker.*  
+   Run the following command to download the script to your home directory:
    ```none
    cd
-   curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
+   curl -O https://raw.githubusercontent.com/afni/docker_v1/refs/heads/main/launch_afni_docker.sh
+   ```
 
-*NB:* If you are using Windows Subsystem Linux (WSL), you will also need to install an X-server, like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
+**NB:** If you are using Windows Subsystem Linux (WSL), you will also need to install an X-server, 
+like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
 
 ---
 
