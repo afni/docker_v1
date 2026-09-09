@@ -19,7 +19,7 @@ This repository serves as a streamlined, direct approach to building or launchin
 * [Technical notes for macOS](#technical-notes-for-macos) 
 * [Technical notes for Linux](#technical-notes-for-linux) 
 * [Technical notes for Docker](#technical-notes-for-docker-any-os)
-* [Build and run the container locally (any OS)](#build-and-run-the-container-locally-any-os)
+* [Technical notes to build locally (any OS)](#technical-notes-to-build-locally-any-os)
 
 ---
 
@@ -242,12 +242,12 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
-# Build and run the container locally (any OS)
+# Technical notes to build locally (any OS)
 
 Most users will run the AFNI docker using the distributed launcher script,
 as described [above](launching-the-afni-docker-any-os).
 
-If you prefer to build the image directly using the localized source 
+If you prefer to build the docker image directly using the localized source 
 files under the afni_docker_universal directory, you can do the following.
 
 1. Get the current GitHub repository for the AFNI docker, with:
