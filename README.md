@@ -25,27 +25,24 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 These items should only need to be done once to setup on the computer for using the AFNI docker.
 
-1. **Docker**: The system used for running containers.  
-   Download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/mac-install/).
-   Note your Mac's architecture (Silicon or Intel).
-
-   If you want to use [Homebrew](https://brew.sh), you can install Docker with the following command:
+1. **Docker**: *The system used for running containers.*  
+   Either download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/mac-install/)
+   (noting your Mac's architecture: Silicon or Intel),  
+   or install using [Homebrew](https://brew.sh) by running:
    ```none
    brew install docker
    ```
 
-2. **XQuartz**: Required for interactive elements like the AFNI and  SUMA GUIs.  
-   Download and install [XQuartz](https://www.xquartz.org/).
-
-   Or use Homebrew:
+2. **XQuartz**: *Required for interactive elements like the AFNI and  SUMA GUIs.*  
+   Either download and install from the [XQuartz website](https://www.xquartz.org/),  
+   or use Homebrew:
    ```none
    brew install --cask xquartz
    ```
 
-3. **Launcher script**: The all-in-one executable script that runs the AFNI Docker.  
-Download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh).  
-
-   Or download to your home directory from the command line:    
+3. **Launcher script**: *The all-in-one executable script that runs the AFNI Docker.*  
+   Either download the script here: [launch_afni_docker.sh](https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh),  
+   or use this command to download it to your home directory:
    ```none
    cd
    curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
