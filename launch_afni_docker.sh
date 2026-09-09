@@ -8,7 +8,7 @@
 ## get the current program name
 prog="launch_afni_docker.sh"
 
-## default docker image
+## default docker image settings
 do_run=0
 show_cmd=0
 base_img="discoraj/afni_docker_universal"
@@ -16,6 +16,8 @@ base_tag="latest"
 dock_img=""
 pull="missing"
 disp=""
+disp_macos="host.docker.internal:0"
+disp_linux="$DISPLAY" ; disp_linux_help='$DISPLAY' # help file shows literal
 
 #################################################
 ## help!
@@ -101,12 +103,13 @@ cat << EOF
                         version present on the OS will be used (if none exists,
                         the latest version will be pulled from Docker Hub)
 
-      -display [DISP] : Use a different display environment variable for
+      -display "DISP" : Use a different display environment variable for
                         testing purposes.
                         Please surround text in double quotes " ".
-                        Default values for DISP (as of 07/2026) are:
-                           "host.docker.internal:0"    (for macOS)
-                           \$DISPLAY                    (for Linux)
+                        Default values for DISP are:
+
+                           for macOS : "${disp_macos}"
+                           for linux : "${disp_linux_help}"
 
       -image IMAGE    : The base name of the docker hub image.  Changing
                         this would launch a different docker image, so it
@@ -129,11 +132,9 @@ cat << EOF
 
            bash ${prog} -tag latest
 
-      3. Launch the docker with the image named "Public_Image_Ltd".
-         This will look for the image locally or pull it from Docker Hub:
+      3. Launch the afni docker and see what the run command is:
 
-           bash ${prog} -run -image "Public_Image_Ltd"
-
+           bash ${prog} -run -show_cmd
 
    -----------------------------------------------------------------------------
    Justin Rajendra 07/2026
@@ -208,14 +209,14 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     os="macos"
     ## set default display variable if not set
     if [[ -z "$disp" ]]; then
-        disp="host.docker.internal:0"
+        disp="${disp_macos}"
     fi
 elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
     # echo "Running on Linux"
     os="linux"
     ## set default display variable if not set
     if [[ -z "$disp" ]]; then
-        disp="${DISPLAY}"
+        disp="${disp_linux}"
     fi
 else
     echo ; 
@@ -288,8 +289,8 @@ if [[ "$os" == "macos" ]]; then
 
    OR I can fix this for you now.
 
-      Do you want me to fix this? You only have to do this once.
-      XQuartz will need to be quit to do this.
+     Do you want me to fix this? You only have to do this once.
+     XQuartz will need to be quit to do this.
 
 EOF
 
@@ -342,7 +343,7 @@ EOF
         if [[ "$fix" == "y" ]]; then
             xquart_pid=`pgrep -i Xquartz`
             if [[ -n "$xquart_pid" ]]; then
-                echo "Killing all XQuartz..."
+                echo "++ Killing all XQuartz..."
                 killall Xquartz
                 sleep 2
             fi
@@ -352,7 +353,7 @@ EOF
             echo
         else
             echo
-            echo "   Please fix the XQuartz setting with above instructions."
+            echo "++ Please fix the XQuartz setting with above instructions."
             echo
             exit 1
         fi
@@ -364,12 +365,12 @@ EOF
     ## this file should exist if docker is running
     if [[ ! -e "/Users/${USER}/.docker/run/docker.sock" ]]; then
         echo ; echo "+* Warning: Docker daemon is not running."
-        echo "   Launching Docker daemon. Please wait."
+        echo "++ Launching Docker daemon. Please wait."
         open -a Docker
         sleep 5 ; echo
 
         while [[ ! -e "/Users/${USER}/.docker/run/docker.sock" ]]; do 
-            echo "   Waiting for Docker daemon..."
+            echo "++ Waiting for Docker daemon..."
             sleep 2
         done
     fi   ## end launch docker if not running
@@ -379,14 +380,14 @@ EOF
     xquart_pid=`pgrep -i Xquartz`
     if [[ -z "$xquart_pid" ]]; then
         echo ; echo "+* Warning: Xquartz is not running."
-        echo "Launching Xquartz. Please wait."
+        echo "++ Launching Xquartz. Please wait."
         open -a XQuartz
         sleep 5 ; echo
 
         while true; do 
             xquart_pid=`pgrep -i Xquartz`
             if [[ -z "$xquart_pid" ]]; then
-                echo "Waiting for Xquartz..."
+                echo "++ Waiting for Xquartz..."
                 sleep 2
             else
                 break
@@ -455,7 +456,7 @@ EOF
     if [ "$docker_active" = "active" ] || \
        [ "$docker_desktop_active" = "active" ]; then
         echo
-        echo "Docker is running."
+        echo "++ Docker is running."
         echo
     else 
         cat <<EOF
