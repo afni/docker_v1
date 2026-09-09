@@ -44,6 +44,9 @@ EOT
 ######################################
 ## get pre compiled R packages
 
+## specify R version
+rver=4.3
+
 ## set some paths and define a variable for the R library location
 echo 'export R_LIBS=/home/afni_user/R' >> /home/afni_user/.bashrc
 echo 'setenv R_LIBS /home/afni_user/R' >> /home/afni_user/.cshrc
@@ -52,10 +55,10 @@ echo 'setenv R_LIBS /home/afni_user/R' >> /home/afni_user/.cshrc
 export R_LIBS=/home/afni_user/R
 
 ## get the pre-compiled R libraries
-curl -O https://afni.nimh.nih.gov/pub/dist/tgz/package_libs/linux_ubuntu_24_ARM_R-4.3_libs.tgz
-tar -xvzf linux_ubuntu_24_ARM_R-4.3_libs.tgz
-mv linux_ubuntu_24_ARM_R-4.3_libs /home/afni_user/R
-rm -f linux_ubuntu_24_ARM_R-4.3_libs.tgz
+curl -O https://afni.nimh.nih.gov/pub/dist/tgz/package_libs/linux_ubuntu_24_ARM_R-${rver}_libs.tgz
+tar -xvzf linux_ubuntu_24_ARM_R-${rver}_libs.tgz
+mv linux_ubuntu_24_ARM_R-${rver}_libs /home/afni_user/R
+rm -f linux_ubuntu_24_ARM_R-${rver}_libs.tgz
 
 ######################################
 ## this may show warnings for dot files and boot camp data
