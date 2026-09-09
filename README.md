@@ -90,23 +90,33 @@ See [**Using the AFNI Docker**](#using-the-afni-docker-mac-linux), below, about 
 
 # Using the AFNI Docker (any OS)
 
-1.  Executing `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
-    docker. 
-    * See `bash launch_afni_docker.sh -help` for more info.
+1. Running `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
+   docker. 
+   * See `bash launch_afni_docker.sh -help` for more info.
+
 2. The afni docker will be launched with the current user's home 
-   directory mounted to /home/external in the docker container. 
+   directory mounted to `/home/external` in the docker container. 
    This allows you to access your files from within the docker 
    container. The Docker program may give you a warning about this, 
    but it is safe to ignore.
 
-4. To exit the docker container, type 'exit' or 'Ctrl+d' **TWICE** in 
-   the terminal.  Once to get out user shell and once to exit the 
-   docker container.  If you only type 'exit' or 'Ctrl+d' **ONCE**, 
+3. When using the docker, any new datasets are still simply owned by
+   the user and exist on the host file system after existing docker.
+
+4. The user can have a AFNI environment settings file on their
+   computer's home directory (`~/.afnirc`), which they can edit as
+   usual to control AFNI behavior within the docker environment. This
+   file exists outside the docker container, so changes remain even after
+   the docker is closed/exited.
+   
+5. To exit the docker container, type 'exit' or 'Ctrl+d' **TWICE** in 
+   the terminal (once to get out user shell, and once to exit the 
+   docker container).  If you only type 'exit' or 'Ctrl+d' **ONCE**, 
    you will be returned to the root shell in the docker container.
 
 ---
 
-# macOS Notes
+# Technical notes for macOS
 
 There are some settings on XQuartz that may prevent the AFNI/SUMA GUI from 
 displaying. The `launch_afni_docker.sh` script will attempt to set the correct 
@@ -178,7 +188,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
-# Linux Notes
+# Technical notes for Linux
 
 - On Linux, the user needs to be in the `docker` group to run this script. 
   If you are not in the docker group, the script will exit with an error. 
@@ -209,7 +219,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
-# Technical Details
+# Technical notes about Docker (any OS)
 
  * The docker container will be launched with the current user's 
    UID and GID. This allows you to create and access files in your 
