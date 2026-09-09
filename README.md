@@ -18,7 +18,8 @@ This repository serves as a streamlined, direct approach to building or launchin
 * [Using the AFNI Docker (any OS)](#using-the-afni-docker-any-os)
 * [Technical notes for macOS](#technical-notes-for-macos) 
 * [Technical notes for Linux](#technical-notes-for-linux) 
-* [Technical notes for Docker](#technical-notes-for-docker-any-os) 
+* [Technical notes for Docker](#technical-notes-for-docker-any-os)
+* [Build and run the container locally (any OS)](#build-and-run-the-container-locally-any-os)
 
 ---
 
@@ -195,29 +196,29 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 # Technical notes for Linux
 
-- On Linux, the user needs to be in the `docker` group to run this script. 
-  If you are not in the docker group, the script will exit with an error. 
-  You need administrative privileges to create the docker group and add 
-  yourself to the group. 
+1. On Linux, the user needs to be in the `docker` group to run this script. 
+   If you are not in the docker group, the script will exit with an error. 
+   You need administrative privileges to create the docker group and add 
+   yourself to the group. 
 
-  You can create the docker group with the following command: 
-  `sudo groupadd docker`. 
+2. You can create the docker group with the following command: 
+   `sudo groupadd docker`. 
 
-  You can add yourself to the docker group with the following command: 
-  `sudo usermod -aG docker $USER`.
+3. You can add yourself to the docker group with the following command: 
+   `sudo usermod -aG docker $USER`.
 
-  You need to restart your computer or log out and log back in for 
-  the group changes to take effect. Running the script with `sudo` 
-  will not fix this issue. 
+   You need to restart your computer or log out and log back in for 
+   the group changes to take effect. Running the script with `sudo` 
+   will not fix this issue. 
 
-- On some Linux variants, the Docker Desktop may block X11 
-  forwarding. If this happens, you can try the `-display` option 
-  to set a different display environment variable. However, this 
-  may not work and the using Docker engine instead of the the 
-  Docker Desktop may be the only way to fix this issue. Please 
-  see the Docker documentation for more information.
+4. On some Linux variants, the Docker Desktop may block X11 
+   forwarding. If this happens, you can try the `-display` option 
+   to set a different display environment variable. However, this 
+   may not work and the using Docker engine instead of the the 
+   Docker Desktop may be the only way to fix this issue. Please 
+   see the Docker documentation for more information.
 
-- `launch_afni_docker.sh` will set `xhost +SI:localuser:$USER` to allow 
+5. `launch_afni_docker.sh` will set `xhost +SI:localuser:$USER` to allow 
    the docker container to connect to the X11 server. If you want to 
    undo this, you can run `xhost -SI:localuser:$USER` after exiting the 
    docker container.
@@ -226,46 +227,64 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 # Technical notes for Docker (any OS)
 
- * The docker container will be launched with the current user's 
+1. You can find the AFNI Docker Hub repository
+   [here](https://hub.docker.com/repository/docker/discoraj/afni_docker_universal/general).
+   
+3. The docker container will be launched with the current user's 
    UID and GID. This allows you to create and access files in your 
    home directory from within the docker container without 
    permission issues.
-* By default the `launch_afni_docker.sh` will pull the latest version of the AFNI docker image from Docker Hub on first run or with the `-latest` option. Currently the Docker Hub repository is owned by Justin Rajendra (DiscoRaj) from the AFNI Group (SSCC at the NIH). You can find the Docker Hub repository [here](https://hub.docker.com/repository/docker/discoraj/afni_docker_universal/general).
 
-# Building and Running the Container Locally
-If you want to construct the image directly using the localized source files under the afni_docker_universal directory, execute:
-```bash
-git clone https://github.com/afni/docker_v1.git
-cd docker_v1/afni_docker_universal
-docker build -t afni_universal .
-```
+4. By default, the `launch_afni_docker.sh` will pull the latest version
+   of the AFNI docker image from Docker Hub on first run or with the
+   `-latest` option. Currently the Docker Hub repository is owned by
+   Justin Rajendra (DiscoRaj) from the AFNI Group (SSCC at the NIH).
 
-### To run the container on macOS, use:
-```bash
-docker run -ti --rm                          \
-    -u     root                              \
-    -v     "${HOME}:/home/external"          \
-    -v     /tmp/.X11-unix:/tmp/.X11-unix     \
-    --env  DISPLAY="host.docker.internal:0"  \
-    --env  USERID="`id -u`"                  \
-    --env  GRPID="`id -g`"                   \
-    --env  GRPNAME="`id -gn`"                \
-    --env  USERNAME="`id -u -n`"             \
-    afni_universal
-```
+---
 
-### To run the container on Linux, use:
-```bash
-docker run -ti --rm                       \
-    -u     root                           \
-    -v     "${HOME}:/home/external"       \
-    -v     /tmp/.X11-unix:/tmp/.X11-unix  \
-    --env  DISPLAY="${DISPLAY}"           \
-    --env  USERID="`id -u`"               \
-    --env  GRPID="`id -g`"                \
-    --env  GRPNAME="`id -gn`"             \
-    --env  USERNAME="`id -u -n`"          \
-    afni_universal
-```
+# Build and run the container locally (any OS)
+
+Most users will run the AFNI docker using the distributed launcher script,
+as described [above](launching-the-afni-docker-any-os).
+
+If you prefer to build the image directly using the localized source 
+files under the afni_docker_universal directory, you can do the following.
+
+1. Get the current GitHub repository for the AFNI docker, with:
+   ```bash
+   git clone https://github.com/afni/docker_v1.git
+   cd docker_v1/afni_docker_universal
+   docker build -t afni_universal .
+   ```
+
+2. The start the container, by running ...
+   * ... this on macOS:
+     
+     ```bash
+     docker run -ti --rm                          \
+         -u     root                              \
+         -v     "${HOME}:/home/external"          \
+         -v     /tmp/.X11-unix:/tmp/.X11-unix     \
+         --env  DISPLAY="host.docker.internal:0"  \
+         --env  USERID="`id -u`"                  \
+         --env  GRPID="`id -g`"                   \
+         --env  GRPNAME="`id -gn`"                \
+         --env  USERNAME="`id -u -n`"             \
+        afni_universal
+     ```
+   * ... or this on Linux:
+     
+      ```bash
+      docker run -ti --rm                       \
+          -u     root                           \
+          -v     "${HOME}:/home/external"       \
+          -v     /tmp/.X11-unix:/tmp/.X11-unix  \
+          --env  DISPLAY="${DISPLAY}"           \
+          --env  USERID="`id -u`"               \
+          --env  GRPID="`id -g`"                \
+          --env  GRPNAME="`id -gn`"             \
+          --env  USERNAME="`id -u -n`"          \
+          afni_universal
+      ```
 
 ---
