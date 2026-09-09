@@ -9,7 +9,11 @@
 prog="launch_afni_docker.sh"
 
 ## default docker image
-dock_img="discoraj/afni_docker_universal:latest"
+do_run=0
+show_cmd=0
+base_img="discoraj/afni_docker_universal"
+base_tag="latest"
+dock_img=""
 pull="missing"
 disp=""
 
@@ -26,9 +30,11 @@ cat << EOF
 
            REQUIREMENTS: ~2~
 
-           1. This MUST be run on macOS or and most Linux variants
+           1. This MUST be run on macOS or a flavor of Linux
               (Windows is not yet supported, besides WSL).
+
            2. Docker MUST be installed and running.
+
            3. On macOS, Xquartz MUST be installed and running.
 
            The script will check for all of the above.
@@ -73,14 +79,26 @@ cat << EOF
    -----------------------------------------------------------------------------
    Options: ~1~
 
-      -latest         : Pull a new afni docker image even if an older one 
-                        exists. This will overwrite the previous local image 
-                        with the newest one from docker hub. If the afni docker 
-                        image does not exist locally, the latest will be pulled.
+      -run            : flag to launch the AFNI docker
 
-      -image [IMG]    : Launch a different docker image.  This can be a local 
-                        image or something from docker hub.
-                        Default is 'discoraj/afni_docker_universal:latest'
+      -tag TAG        : Specify which version of AFNI to run, corresponding
+                        to any of the available Docker Hub tagged versions.  
+                        The value of TAG can be the full AFNI version
+                        string or simple version number, like:
+
+                           AFNI_26.0.01
+                           26.0.01
+
+                        Or TAG can be a keyword:
+
+                           latest   : pull new docker image to get latest 
+                                      version of AFNI that is distributed, 
+                                      (overwrites any previous AFNI docker
+                                      images)
+
+                        If this option is not used, then the AFNI docker
+                        image present on the OS will be used; if none exists,
+                        the latest version will be pulled from Docker Hub
 
       -display [DISP] : Use a different display environment variable for
                         testing purposes.
@@ -89,23 +107,25 @@ cat << EOF
                            "host.docker.internal:0"    (for macOS)
                            \$DISPLAY                    (for Linux)
 
-      -help           : Show this help.
+      -show_cmd       : Display the full docker command when launching
+
+      -help           : Show this help (also shown if no options provided)
 
    -----------------------------------------------------------------------------
    Examples: ~1~
 
       1. Just launch the afni docker:
 
-           bash ${prog}
+           bash ${prog} -run
 
       2. Launch the afni docker and update the local image:
 
-           bash ${prog} -latest
+           bash ${prog} -tag latest
 
       3. Launch the docker with the image named "Public_Image_Ltd".
          This will look for the image locally or pull it from Docker Hub:
 
-           bash ${prog} -image "Public_Image_Ltd"
+           bash ${prog} -run -image "Public_Image_Ltd"
 
 
    -----------------------------------------------------------------------------
@@ -118,6 +138,14 @@ exit 0
 #################################################
 ## get arguments or show help
 
+# no args -> show help and exit
+
+if [ "$#" = "0" ]; then
+    show_help
+fi
+
+# proc args
+
 argv=("")
 for arg in "$@"; do
     argv+=("$arg")
@@ -125,14 +153,16 @@ done
 
 narg=1 ; amax=$#
 while [ $narg -le $amax ]; do
-    if [ "${argv[$narg]}" = "-image" ]; then
+    if [ "${argv[$narg]}" = "-run" ]; then
+        do_run=1
+    elif [ "${argv[$narg]}" = "-show_cmd" ]; then
+        show_cmd=1
+    elif [ "${argv[$narg]}" = "-tag" ]; then
         ((narg++))
-        dock_img="${argv[$narg]}"
+        base_tag="${argv[$narg]}"
     elif [ "${argv[$narg]}" = "-display" ]; then
         ((narg++))
         disp="${argv[$narg]}"
-    elif [ "${argv[$narg]}" = "-latest" ]; then
-        pull="always"
     elif [ "${argv[$narg]}" = "-help" ] || [ "${argv[$narg]}" = "-h" ]; then
         show_help
     else
@@ -140,6 +170,24 @@ while [ $narg -le $amax ]; do
     fi
     ((narg++))
 done
+
+#################################################
+## did user add -run?
+
+if [[ ${do_run} = 0 ]]; then
+    echo "** User entered options but no '-run' flag." 
+    echo "   Please add '-run' to launch docker, or use '-help' to see help"
+    exit 1
+fi
+
+#################################################
+## build docker image name
+
+dock_img="${base_img}:${base_tag}"
+
+if [[ "${base_tag}" == "latest" ]]; then
+    pull="always"
+fi
 
 #################################################
 ## detect os type and set display variable
@@ -159,9 +207,12 @@ elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
         disp="${DISPLAY}"
     fi
 else
-    echo ; echo "** ERROR: You don't seem to be running on a supported OS." ; echo
-    echo "If you are, there may be a problem with this program..."
-    echo "Please post the error to: https://discuss.afni.nimh.nih.gov" ; echo
+    echo ; 
+    echo "** ERROR: You don't seem to be running on a supported OS."
+    echo
+    echo "   If you are, there may be a problem with this program..."
+    echo "   Please post the error to: https://discuss.afni.nimh.nih.gov"
+    echo
     exit 1
 fi
 
@@ -174,9 +225,9 @@ if [[ -z "$docker_bin" ]]; then
     echo
     echo "** ERROR: Docker not found."
     echo
-    echo "Is Docker installed?"
-    echo "Installation instructions can be found at: "
-    echo "https://docs.docker.com/engine/"
+    echo "   Is Docker installed?"
+    echo "   Installation instructions can be found at: "
+    echo "   https://docs.docker.com/engine/"
     echo
     exit 1
 fi
@@ -190,11 +241,15 @@ if [[ "$os" == "macos" ]]; then
     xquartz_bin=`command -v Xquartz || command -v XQuartz`
     if [[ -z "$xquartz_bin" ]]; then
         ## Fallback in case it is installed but not in PATH
-        if [[ ! -d "/Applications/Utilities/XQuartz.app" && ! -d "/Applications/XQuartz.app" ]]; then
-            echo ; echo "** ERROR: XQuartz not found." ; echo
-            echo "Is XQuartz installed and in your PATH?"
-            echo "If not, you can install it from homebrew"
-            echo "or from here: https://www.xquartz.org" ; echo
+        if [[ ! -d "/Applications/Utilities/XQuartz.app" && \
+              ! -d "/Applications/XQuartz.app" ]]; then
+            echo
+            echo "** ERROR: XQuartz not found." 
+            echo
+            echo "   Is XQuartz installed and in your PATH?"
+            echo "   If not, you can install it from homebrew"
+            echo "   or from here: https://www.xquartz.org"
+            echo
             exit 1
         fi
     fi   ## end of installed XQuartz check
@@ -205,7 +260,8 @@ if [[ "$os" == "macos" ]]; then
     xquartz_auth=`defaults read org.xquartz.X11 no_auth`
 
     if [[ "$xquartz_sec" == "1" || "$xquartz_auth" == "0" ]]; then
-        echo ; echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
+        echo
+        echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
         echo
         echo "You can fix this by entering the following commands with XQuartz quit:"
         echo
@@ -278,7 +334,7 @@ if [[ "$os" == "macos" ]]; then
             echo
         else
             echo
-            echo "Please fix the XQuartz setting with the above instructions."
+            echo "   Please fix the XQuartz setting with above instructions."
             echo
             exit 1
         fi
@@ -290,12 +346,12 @@ if [[ "$os" == "macos" ]]; then
     ## this file should exist if docker is running
     if [[ ! -e "/Users/${USER}/.docker/run/docker.sock" ]]; then
         echo ; echo "+* Warning: Docker daemon is not running."
-        echo "Launching Docker daemon. Please wait."
+        echo "   Launching Docker daemon. Please wait."
         open -a Docker
         sleep 5 ; echo
 
         while [[ ! -e "/Users/${USER}/.docker/run/docker.sock" ]]; do 
-            echo "Waiting for Docker daemon..."
+            echo "   Waiting for Docker daemon..."
             sleep 2
         done
     fi   ## end launch docker if not running
@@ -386,17 +442,49 @@ fi   ## end of linux check
 ###########################################################################
 ## run docker container
 
-echo ; echo "Launching ${dock_img} ...beep boop beep boop..." ; echo
+cat <<EOF
+
+++ Launching: ${dock_img}
+
+   ...beep boop beep boop...
+
+EOF
+
+# display command if user asked 
+if [ ${show_cmd} = 1 ]; then
+
+cat <<EOF
+++ Launching AFNI docker with this command:
+   ------------------------------------------------
+    docker run -ti --rm                          \\
+        -u      root                             \\
+        -v      "${HOME}:/home/external" \\
+        -v      /tmp/.X11-unix:/tmp/.X11-unix    \\
+        --env   DISPLAY="${disp}" \\
+        --env   USERID="`id -u`"                 \\
+        --env   GRPID="`id -g`"                  \\
+        --env   GRPNAME="`id -gn`"               \\
+        --env   USERNAME="`id -u -n`"            \\
+        --pull  "${pull}"                        \\
+        "${dock_img}"
+   ------------------------------------------------
+
+EOF
+
+fi
+
+# finally, launch the docker
+
 # xhost +SI:localuser:$USER
-docker run -ti --rm \
-       -u root \
-       -v "${HOME}:/home/external" \
-       -v /tmp/.X11-unix:/tmp/.X11-unix \
-       --env DISPLAY="${disp}" \
-       --env USERID="`id -u`" \
-       --env GRPID="`id -g`" \
-       --env GRPNAME="`id -gn`" \
-       --env USERNAME="`id -u -n`" \
-       --pull "${pull}" \
-       "${dock_img}"
+docker run -ti --rm                          \
+    -u      root                             \
+    -v      "${HOME}:/home/external"         \
+    -v      /tmp/.X11-unix:/tmp/.X11-unix    \
+    --env   DISPLAY="${disp}"                \
+    --env   USERID="`id -u`"                 \
+    --env   GRPID="`id -g`"                  \
+    --env   GRPNAME="`id -gn`"               \
+    --env   USERNAME="`id -u -n`"            \
+    --pull  "${pull}"                        \
+    "${dock_img}"
 exit 0
