@@ -77,15 +77,18 @@ cat << EOF
                         exists. This will overwrite the previous local image 
                         with the newest one from docker hub. If the afni docker 
                         image does not exist locally, the latest will be pulled.
+
       -image [IMG]    : Launch a different docker image.  This can be a local 
                         image or something from docker hub.
                         Default is 'discoraj/afni_docker_universal:latest'
+
       -display [DISP] : Use a different display environment variable for
                         testing purposes.
                         Please surround text in double quotes " ".
                         Default values for DISP (as of 07/2026) are:
                            "host.docker.internal:0"    (for macOS)
                            \$DISPLAY                    (for Linux)
+
       -help           : Show this help.
 
    -----------------------------------------------------------------------------
@@ -93,16 +96,16 @@ cat << EOF
 
       1. Just launch the afni docker:
 
-         bash ${prog}
+           bash ${prog}
 
       2. Launch the afni docker and update the local image:
 
-         bash ${prog} -latest
+           bash ${prog} -latest
 
       3. Launch the docker with the image named "Public_Image_Ltd".
          This will look for the image locally or pull it from Docker Hub:
 
-         bash ${prog} -image "Public_Image_Ltd"
+           bash ${prog} -image "Public_Image_Ltd"
 
 
    -----------------------------------------------------------------------------
