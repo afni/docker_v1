@@ -45,7 +45,7 @@ These items should only need to be done once to setup on the computer for using 
    or use this command to download it to your home directory:
    ```none
    cd
-   curl -O https://github.com/afni/docker_v1/blob/main/launch_afni_docker.sh
+   curl -O https://raw.githubusercontent.com/afni/docker_v1/refs/heads/main/launch_afni_docker.sh
    ```
 
 ---
