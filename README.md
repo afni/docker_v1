@@ -24,7 +24,7 @@ This repository serves as a streamlined, direct approach to building or launchin
 
 # Installation on macOS
 
-These items should only need to be done once to setup on the computer for using the AFNI docker.
+These items should only need to be done once on your computer to setup the AFNI docker.
 
 1. **Docker**: *The system used for running containers.*  
    Either download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/mac-install/)
@@ -52,7 +52,7 @@ These items should only need to be done once to setup on the computer for using 
 
 # Installation on Linux
 
-These items should only need to be done once to setup on the computer for using the AFNI docker.
+These items should only need to be done once on your computer to setup the AFNI docker.
 
 1. **Docker**: *The system used for running containers.*  
    Download and install from the [Docker website](https://docs.docker.com/desktop/setup/install/linux/)
@@ -91,8 +91,8 @@ See [**Using the AFNI Docker**](#using-the-afni-docker-mac-linux), below, about 
 
 # Using the AFNI Docker (any OS)
 
-1. Running `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
-   docker. 
+1. Running `bash launch_afni_docker.sh` with no arguments will configure
+   and launch the current AFNI docker. 
    * See `bash launch_afni_docker.sh -help` for more info.
 
 2. The afni docker will be launched with the current user's home 
