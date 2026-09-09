@@ -69,17 +69,17 @@ like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
 
 ---
 
-# Launching the AFNI Docker
+# Launching the AFNI Docker (any OS)
 
-To launch your current available version of AFNI via docker, run:
+To launch your currently available version of AFNI via docker, simply run the launcher script:
 ```none
 bash launch_afni_docker.sh
 ```
 
-On first run, the script will check for the latest version of AFNI and download it if necessary.
-If you already have a local AFNI Docker, it will be used.
+The first time it is run, the script will check for the latest version of AFNI and download it if necessary.
+If you already have a local AFNI Docker, that same version will be used.
 
-To force the latest version of AFNI, run:
+To get+launch the latest version of AFNI, run:
 ```none
 bash launch_afni_docker.sh -latest
 ```
@@ -88,7 +88,7 @@ See [**Using the AFNI Docker**](#using-the-afni-docker-mac-linux), below, about 
 
 ---
 
-# Using the AFNI Docker
+# Using the AFNI Docker (any OS)
 
 1.  Executing `bash launch_afni_docker.sh` with no arguments will configure and launch the afni 
     docker. 
