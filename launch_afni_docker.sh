@@ -64,9 +64,10 @@ cat << EOF
               will exit with an error. You need administrative privileges
               to create the docker group and add yourself to the group. 
               You can create the docker group with the following command: 
-              "sudo groupadd docker". 
+                 sudo groupadd docker
               You can add yourself to the docker group with the following 
-              command: "sudo usermod -aG docker \$USER".
+              command: 
+                 sudo usermod -aG docker \$USER
               You need to restart your computer or log out and log back in for 
               the group changes to take effect. Running the script with sudo 
               will not fix this issue. 
@@ -89,7 +90,7 @@ cat << EOF
                            AFNI_26.0.01
                            26.0.01
 
-                        Or TAG can be a keyword:
+                        or TAG can be a keyword:
 
                            latest   : pull new docker image to get latest 
                                       version of AFNI that is distributed, 
@@ -97,8 +98,8 @@ cat << EOF
                                       images)
 
                         If this option is not used, then the AFNI docker
-                        image present on the OS will be used; if none exists,
-                        the latest version will be pulled from Docker Hub
+                        version present on the OS will be used (if none exists,
+                        the latest version will be pulled from Docker Hub)
 
       -display [DISP] : Use a different display environment variable for
                         testing purposes.
@@ -107,7 +108,13 @@ cat << EOF
                            "host.docker.internal:0"    (for macOS)
                            \$DISPLAY                    (for Linux)
 
-      -show_cmd       : Display the full docker command when launching
+      -image IMAGE    : The base name of the docker hub image.  Changing
+                        this would launch a different docker image, so it
+                        does not ever need to be used to keep using the AFNI
+                        docker
+                        (def : ${base_img})
+
+      -show_cmd       : Display the 'docker run ...' command when launching
 
       -help           : Show this help (also shown if no options provided)
 
@@ -157,13 +164,17 @@ while [ $narg -le $amax ]; do
         do_run=1
     elif [ "${argv[$narg]}" = "-show_cmd" ]; then
         show_cmd=1
+    elif [ "${argv[$narg]}" = "-image" ]; then
+        ((narg++))
+        base_img="${argv[$narg]}"
     elif [ "${argv[$narg]}" = "-tag" ]; then
         ((narg++))
         base_tag="${argv[$narg]}"
     elif [ "${argv[$narg]}" = "-display" ]; then
         ((narg++))
         disp="${argv[$narg]}"
-    elif [ "${argv[$narg]}" = "-help" ] || [ "${argv[$narg]}" = "-h" ]; then
+    elif [ "${argv[$narg]}" = "-help" ] || \
+         [ "${argv[$narg]}" = "-h" ]; then
         show_help
     else
         show_help
@@ -260,27 +271,31 @@ if [[ "$os" == "macos" ]]; then
     xquartz_auth=`defaults read org.xquartz.X11 no_auth`
 
     if [[ "$xquartz_sec" == "1" || "$xquartz_auth" == "0" ]]; then
-        echo
-        echo "** ERROR: XQuartz is blocking tcp clients needed for docker."
-        echo
-        echo "You can fix this by entering the following commands with XQuartz quit:"
-        echo
-        echo "defaults write org.xquartz.X11.plist nolisten_tcp -bool false"
-        echo "defaults write org.xquartz.X11 no_auth -boolean true"
-        echo
-        echo "OR you can do this in the Security tab of the Settings in XQuartz."
-        echo "Uncheck the 'Authenticate connections' box."
-        echo "AND"
-        echo "Check the 'Allow connections from network clients' box."
-        echo
-        echo "OR I can fix this for you now."
-        echo "Do you want me to fix this? You only have to do this once."
-        echo "XQuartz will need to be quit to do this."
-        echo
-        
-        read -p "Enter Y to quit XQuartz and fix this or enter anything else to exit: " fix
+        cat <<EOF
 
-        if [[ "$fix" == "Y" ]]; then
+** ERROR: XQuartz is blocking tcp clients needed for docker.
+
+   You can fix this by entering the following commands with XQuartz quit:
+
+     defaults write org.xquartz.X11.plist nolisten_tcp -bool false
+     defaults write org.xquartz.X11 no_auth -boolean true
+
+   OR you can do this in the Security tab of the Settings in XQuartz:
+
+     Uncheck the 'Authenticate connections' box.
+     AND
+     Check the 'Allow connections from network clients' box.
+
+   OR I can fix this for you now.
+
+      Do you want me to fix this? You only have to do this once.
+      XQuartz will need to be quit to do this.
+
+EOF
+
+        read -p "  Should I quit XQuartz and fix this? y/[n]" fix
+
+        if [[ "$fix" == "y" ]]; then
             xquart_pid=`pgrep -i Xquartz`
             if [[ -n "$xquart_pid" ]]; then
                 echo "Killing all XQuartz..."
@@ -306,22 +321,25 @@ if [[ "$os" == "macos" ]]; then
     xquartz_iglx=`defaults read org.xquartz.X11 enable_iglx 2>/dev/null`
 
     if [[ "$xquartz_iglx" != "1" ]]; then
-        echo
-        echo "** ERROR: XQuartz indirect GLX is not enabled."
-        echo
-        echo "This setting is needed for OpenGL programs such as SUMA."
-        echo "You can fix this by entering the following command with XQuartz quit:"
-        echo
-        echo "defaults write org.xquartz.X11 enable_iglx -bool true"
-        echo
-        echo "OR I can fix this for you now."
-        echo "Do you want me to fix this? You only have to do this once."
-        echo "XQuartz will need to be restarted for this change to take effect."
-        echo
+        cat <<EOF
 
-        read -p "Enter Y to quit XQuartz and fix this or enter anything else to exit: " fix
+** ERROR: XQuartz indirect GLX is not enabled.
 
-        if [[ "$fix" == "Y" ]]; then
+   This setting is needed for OpenGL programs such as SUMA.
+   You can fix this by entering the following command with XQuartz quit:
+
+     defaults write org.xquartz.X11 enable_iglx -bool true
+
+   OR I can fix this for you now.
+
+     Do you want me to fix this? You only have to do this once.
+     XQuartz will need to be restarted for this change to take effect.
+
+EOF
+
+        read -p "  Should I quit XQuartz and fix this? y/[n]" fix
+
+        if [[ "$fix" == "y" ]]; then
             xquart_pid=`pgrep -i Xquartz`
             if [[ -n "$xquart_pid" ]]; then
                 echo "Killing all XQuartz..."
@@ -389,29 +407,44 @@ if [[ "$os" == "linux" ]]; then
     ## Check for docker group and if the user is a member.
     docker_grp_exists="`getent group | grep docker`"
     if [ "$docker_grp_exists" = "" ]; then
-        echo
-        echo "** ERROR: The docker group does not exist."
-        echo
-        echo "Please create the docker group (sudo groupadd docker) "
-        echo "and add yourself to it (sudo usermod -aG docker $USER)."
-        echo "Then restart your computer."
-        echo "If you are in the docker group, there may be a problem with this program..."
-        echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
-        echo
+        cat <<EOF
+
+** ERROR: The docker group does not exist.
+
+   Please create the docker group:
+
+     sudo groupadd docker
+
+   and add yourself to it:
+
+     sudo usermod -aG docker \$USER
+
+   Then restart your computer.
+
+   If you are in the docker group, there may be a problem with this program...
+   Please post the error to: https://discuss.afni.nimh.nih.gov
+
+EOF
         exit 1
     fi
 
     docker_member="`groups $USER | grep docker`"
     if [ "$docker_member" = "" ]; then
-        echo
-        echo "** ERROR: You don't seem to be in the docker group."
-        echo
-        echo "This may cause issues with permissions when running the docker container."
-        echo "If you haven't already, you may want to add yourself to the docker "
-        echo "group (sudo usermod -aG docker $USER) and restart your computer."
-        echo "If you are in the docker group, there may be a problem with this program..."
-        echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
-        echo
+cat <<EOF
+
+** ERROR: You don't seem to be in the docker group.
+   This may cause issues with permissions when running the docker container.
+   If you haven't already, you may want to add yourself to the docker group:
+
+     sudo usermod -aG docker \$USER
+
+   and restart your computer.
+
+   If you are in the docker group, there may be a problem with this program...
+   Please post the error to: https://discuss.afni.nimh.nih.gov
+
+EOF
+
         exit 1
     fi   ## end of docker group check
 
@@ -419,21 +452,28 @@ if [[ "$os" == "linux" ]]; then
     ## check to see if docker is running.
     docker_active="`systemctl is-active docker`"
     docker_desktop_active="`systemctl --user is-active docker-desktop`"
-    if [ "$docker_active" = "active" ] || [ "$docker_desktop_active" = "active" ]; then
+    if [ "$docker_active" = "active" ] || \
+       [ "$docker_desktop_active" = "active" ]; then
         echo
         echo "Docker is running."
         echo
     else 
-        echo
-        echo "** ERROR: Docker is not running."
-        echo
-        echo "Please start the docker service:"
-        echo "sudo systemctl start docker"
-        echo "or"
-        echo "systemctl --user start docker-desktop"
-        echo "Then try again."
-        echo "Please post the error to: https://discuss.afni.nimh.nih.gov"
-        echo
+        cat <<EOF
+
+** ERROR: Docker is not running.
+   Please start the docker service:
+
+     sudo systemctl start docker
+
+   or
+
+     systemctl --user start docker-desktop
+
+   Then try again.
+   Please post the error to: https://discuss.afni.nimh.nih.gov
+
+EOF
+
         exit 1
     fi   ## end of docker running check
 
@@ -451,6 +491,7 @@ cat <<EOF
 EOF
 
 # display command if user asked 
+
 if [ ${show_cmd} = 1 ]; then
 
 cat <<EOF
@@ -487,4 +528,5 @@ docker run -ti --rm                          \
     --env   USERNAME="`id -u -n`"            \
     --pull  "${pull}"                        \
     "${dock_img}"
+
 exit 0
