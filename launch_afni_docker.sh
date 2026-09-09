@@ -6,7 +6,7 @@
 ## universal build
 
 ## get the current program name
-prog="launch_afni_docker"
+prog="launch_afni_docker.sh"
 
 ## default docker image
 dock_img="discoraj/afni_docker_universal:latest"
@@ -25,29 +25,34 @@ cat << EOF
            variants. This script does not need any arguments.  
 
            REQUIREMENTS: ~2~
-           1. This MUST be run on macOS or and most Linux variants.
-              (Windows is not yet supported)
+
+           1. This MUST be run on macOS or and most Linux variants
+              (Windows is not yet supported, besides WSL).
            2. Docker MUST be installed and running.
            3. On macOS, Xquartz MUST be installed and running.
 
            The script will check for all of the above.
 
            NOTES: ~2~
+
            1. The afni docker will be launched with the current user's home 
               directory mounted to /home/external in the docker container. 
               This allows you to access your files from within the docker 
               container. The Docker program may give you a warning about this,  
               but it is safe to ignore.
+
            2. The docker container will be launched with the current user's 
               UID and GID. This allows you to create and access files in your 
               home directory from within the docker container without 
               permission issues.
+
            3. On some Linux variants, the Docker Desktop may block X11 
               forwarding. If this happens, you can try the -display option 
               to set a different display environment variable. However, this 
               may not work and the using Docker engine instead of the the 
               Docker Desktop may be the only way to fix this issue. Please 
               see the Docker documentation for more information.
+
            4. On Linux, the user needs to be in the docker group to run 
               this script. If you are not in the docker group, the script 
               will exit with an error. You need administrative privileges
@@ -59,13 +64,14 @@ cat << EOF
               You need to restart your computer or log out and log back in for 
               the group changes to take effect. Running the script with sudo 
               will not fix this issue. 
+
            5. To exit the docker container, type 'exit' or 'Ctrl+d' TWICE in 
               the terminal.  Once to get out user shell and once to exit the 
               docker container.  If you only type 'exit' or 'Ctrl+d' ONCE, 
               you will be returned to the root shell in the docker container.
 
    -----------------------------------------------------------------------------
-   options: ~1~
+   Options: ~1~
 
       -latest         : Pull a new afni docker image even if an older one 
                         exists. This will overwrite the previous local image 
@@ -83,16 +89,21 @@ cat << EOF
       -help           : Show this help.
 
    -----------------------------------------------------------------------------
-   examples: ~1~
+   Examples: ~1~
 
-      $prog
-                : Just launch the afni docker.
-      $prog -latest
-                : Launch the afni docker and update the local image.
-      $prog -image "Public_Image_Ltd"
-                : Launch the docker with the image named "Public_Image_Ltd".
-                  This will look for the image locally or pull it from docker 
-                  hub.
+      1. Just launch the afni docker:
+
+         bash ${prog}
+
+      2. Launch the afni docker and update the local image:
+
+         bash ${prog} -latest
+
+      3. Launch the docker with the image named "Public_Image_Ltd".
+         This will look for the image locally or pull it from Docker Hub:
+
+         bash ${prog} -image "Public_Image_Ltd"
+
 
    -----------------------------------------------------------------------------
    Justin Rajendra 07/2026
