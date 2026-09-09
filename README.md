@@ -14,10 +14,11 @@ This repository serves as a streamlined, direct approach to building or launchin
 # Quick Links
 * [Installation on macOS](#installation-on-macos)
 * [Installation on Linux](#installation-on-linux)
-* [Launching the AFNI Docker](#launching-the-afni-docker)
-* [Using the AFNI Docker](#using-the-afni-docker)
-* [macOS Notes](#macos-notes) 
-* [Linux Notes](#linux-notes)
+* [Launching the AFNI Docker (any OS)](#launching-the-afni-docker-any-os)
+* [Using the AFNI Docker (any OS)](#using-the-afni-docker-any-os)
+* [Technical notes for macOS](#technical-notes-for-macos) 
+* [Technical notes for Linux](#technical-notes-for-linux) 
+* [Technical notes for Docker](#technical-notes-for-docker-any-os) 
 
 ---
 
@@ -219,7 +220,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 ---
 
-# Technical notes about Docker (any OS)
+# Technical notes for Docker (any OS)
 
  * The docker container will be launched with the current user's 
    UID and GID. This allows you to create and access files in your 
