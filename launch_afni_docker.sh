@@ -175,9 +175,17 @@ if [[ -z "$docker_bin" ]]; then
     echo
     echo "** ERROR: Docker not found."
     echo
-    echo "Is Docker installed?"
-    echo "Installation instructions can be found at: "
-    echo "https://docs.docker.com/engine/"
+    echo "   Is Docker installed?"
+    if [[ "$os" == "macos" ]]; then
+        echo "   Installation instructions for macOS can be found at:"
+        echo "   https://docs.docker.com/desktop/setup/install/mac-install/"
+    elif [[ "$os" == "linux" ]]; then
+        echo "   Installation instructions for Linux can be found at:"
+        echo "   https://docs.docker.com/desktop/setup/install/linux/"
+    else
+        echo "   Unknown OS (?); see generic docker engine instructions:"
+        echo "   https://docs.docker.com/engine/"
+    fi
     echo
     exit 1
 fi
