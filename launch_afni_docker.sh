@@ -208,6 +208,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
     # echo "Running on macOS"
     os="macos"
     ## set default display variable if not set
+    # add display number after XQuartz starts
     if [[ -z "$disp" ]]; then
         disp="${disp_macos}"
     fi
@@ -238,8 +239,16 @@ if [[ -z "$docker_bin" ]]; then
     echo "** ERROR: Docker not found."
     echo
     echo "   Is Docker installed?"
-    echo "   Installation instructions can be found at: "
-    echo "   https://docs.docker.com/engine/"
+    if [[ "$os" == "macos" ]]; then
+        echo "   Installation instructions for macOS can be found at:"
+        echo "   https://docs.docker.com/desktop/setup/install/mac-install/"
+    elif [[ "$os" == "linux" ]]; then
+        echo "   Installation instructions for Linux can be found at:"
+        echo "   https://docs.docker.com/desktop/setup/install/linux/"
+    else
+        echo "   Unknown OS (?); see generic docker engine instructions:"
+        echo "   https://docs.docker.com/engine/"
+    fi
     echo
     exit 1
 fi
@@ -395,6 +404,19 @@ EOF
         done
     fi   ## end launch XQuartz if not running
 
+    # 4. Dynamically determine what port XQuartz is ACTUALLY using right now
+    # This reads the port from your user-owned processes, bypassing root restrictions.
+    PORT=$(lsof -i -P -s TCP:LISTEN | grep -i X11 | awk -F: '{print $2}' | awk '{print $1}' | head -n 1)
+    
+    # If XQuartz jumped to 6001 or 6002 because of ghost lock files, 
+    # calculate the correct display number ($DISPLAY = port - 6000)
+    DISPLAY_NUM=0
+    if [ ! -z "$PORT" ]; then
+        DISPLAY_NUM=$((PORT - 6000))
+    fi
+    echo "🚀 Launching Docker with DISPLAY=$disp:$DISPLAY_NUM (Port: $PORT)"
+    disp=$disp:$DISPLAY_NUM 
+  
 fi   ## end of macOS check
 
 #################################################
