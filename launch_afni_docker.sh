@@ -16,7 +16,7 @@ base_tag="latest"
 dock_img=""
 pull="missing"
 disp=""
-disp_macos="host.docker.internal:0"
+disp_macos="host.docker.internal"
 disp_linux="$DISPLAY" ; disp_linux_help='$DISPLAY' # help file shows literal
 
 #################################################
