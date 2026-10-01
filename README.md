@@ -83,7 +83,7 @@ If you already have a local AFNI Docker, that same version will be used.
 
 To launch the **latest** distributed version of AFNI, run:
 ```none
-bash launch_afni_docker.sh -latest
+bash launch_afni_docker.sh -run -tag latest
 ```
 
 See [**Using the AFNI Docker**](#using-the-afni-docker-mac-linux), below, about navigating file structure, exiting the container, and more.
@@ -237,7 +237,7 @@ Then restart XQuartz and the terminal for the changes to take effect.
 
 4. By default, the `launch_afni_docker.sh` will pull the latest version
    of the AFNI docker image from Docker Hub on first run or with the
-   `-latest` option. Currently the Docker Hub repository is owned by
+   `-tag latest` option. Currently the Docker Hub repository is owned by
    Justin Rajendra (DiscoRaj) from the AFNI Group (SSCC at the NIH).
 
 ---
@@ -270,7 +270,7 @@ files under the afni_docker_universal directory, you can do the following.
          --env  GRPID="`id -g`"                   \
          --env  GRPNAME="`id -gn`"                \
          --env  USERNAME="`id -u -n`"             \
-        afni_universal
+         afni_universal
      ```
    * ... or this on Linux:
      
