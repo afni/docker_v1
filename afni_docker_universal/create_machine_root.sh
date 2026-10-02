@@ -13,7 +13,7 @@ apt-get update
 apt install -y software-properties-common
 add-apt-repository universe -y
 apt-get update
-apt-get install -y curl tcsh sudo ffmpeg iputils-ping wget
+apt-get install -y curl tcsh sudo ffmpeg iputils-ping wget mesa-utils
 
 ######################################
 ## get the admin script for the afni install
