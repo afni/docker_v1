@@ -257,7 +257,7 @@ files under the afni_docker_universal directory, you can do the following.
    docker build -t afni_universal .
    ```
 
-2. The start the container, by running ...
+2. Then start the container by running ...
    * ... this on macOS:
      
      ```bash
