@@ -75,7 +75,7 @@ like [vcXsrv](https://sourceforge.net/projects/vcxsrv/).
 
 To launch your **current** version of AFNI via docker, simply run the launcher script:
 ```none
-bash launch_afni_docker.sh
+bash launch_afni_docker.sh -run
 ```
 
 The first time it is run, the script will check for the latest version of AFNI and download it if necessary.
